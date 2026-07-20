@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Fiorentina — Pizzeria artisanale à Nice · Pizza &amp; Pinsa Romana</title>
+  <meta name="description" content="La Fiorentina, pizzeria familiale à Nice. Plus de 30 pizzas artisanales et pinsas romanes, pâte maison, produits frais. Sur place ou à emporter — 29 Av. Sainte-Marguerite, Nice.">
+  <meta name="theme-color" content="#0d0a08">
+  <link rel="canonical" href="https://pizza-fiorentina-nice.fr/fr">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="restaurant">
+  <meta property="og:title" content="La Fiorentina — Pizzeria artisanale à Nice">
+  <meta property="og:description" content="Pizza &amp; Pinsa Romana faites maison. Une histoire de famille, une passion du feu. Sur place ou à emporter.">
+  <meta property="og:locale" content="fr_FR">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23e2572b'/%3E%3Ccircle cx='50' cy='50' r='36' fill='%23f0c96a'/%3E%3Ccircle cx='38' cy='42' r='7' fill='%23c7342a'/%3E%3Ccircle cx='60' cy='58' r='7' fill='%23c7342a'/%3E%3Ccircle cx='58' cy='34' r='5' fill='%236a9a4e'/%3E%3Ccircle cx='38' cy='64' r='5' fill='%236a9a4e'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Données structurées SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Pizza Fiorentina",
+    "servesCuisine": ["Pizza", "Italien", "Méditerranéen"],
+    "priceRange": "€€",
+    "telephone": "+33493181054",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "29 Avenue Sainte-Marguerite",
+      "addressLocality": "Nice",
+      "postalCode": "06200",
+      "addressCountry": "FR"
+    },
+    "geo": { "@type": "GeoCoordinates", "latitude": 43.67742, "longitude": 7.2224896 },
+    "url": "https://pizza-fiorentina-nice.fr/fr",
+    "sameAs": [
+      "https://www.facebook.com/PizzaFiorentinaNice",
+      "https://www.instagram.com/fiorentina_nice/"
+    ],
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Monday", "opens": "18:00", "closes": "22:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday"], "opens": "11:45", "closes": "14:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday"], "opens": "18:00", "closes": "22:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "18:00", "closes": "22:00" }
+    ],
+    "acceptsReservations": "True"
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ══════════ PRELOADER ══════════ -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-inner">
+      <svg class="preloader-pizza" viewBox="0 0 100 100" width="72" height="72">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#e2572b" stroke-width="4" stroke-dasharray="276" stroke-dashoffset="276" class="pz-crust"/>
+        <circle cx="50" cy="50" r="33" fill="none" stroke="#d9a441" stroke-width="2" opacity="0" class="pz-cheese"/>
+        <g class="pz-topping" opacity="0">
+          <circle cx="40" cy="40" r="5" fill="#c7342a"/>
+          <circle cx="61" cy="56" r="5" fill="#c7342a"/>
+          <circle cx="55" cy="36" r="3.5" fill="#6a9a4e"/>
+          <circle cx="38" cy="60" r="3.5" fill="#6a9a4e"/>
+        </g>
+      </svg>
+      <p class="preloader-word"><span>L</span><span>a</span><span>&nbsp;</span><span>F</span><span>i</span><span>o</span><span>r</span><span>e</span><span>n</span><span>t</span><span>i</span><span>n</span><span>a</span></p>
+    </div>
+  </div>
+
+  <!-- Barre de progression du scroll -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- Curseur personnalisé -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- ══════════ NAVIGATION ══════════ -->
+  <header class="nav" id="nav">
+    <a class="nav-brand" href="#accueil" data-cursor>
+      <span class="nav-brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="34" height="34"><circle cx="50" cy="50" r="46" fill="#e2572b"/><circle cx="50" cy="50" r="36" fill="#f0c96a"/><circle cx="38" cy="42" r="7" fill="#c7342a"/><circle cx="60" cy="58" r="7" fill="#c7342a"/><circle cx="58" cy="34" r="5" fill="#6a9a4e"/><circle cx="38" cy="64" r="5" fill="#6a9a4e"/></svg>
+      </span>
+      <span class="nav-brand-text">La <em>Fiorentina</em></span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Navigation principale">
+      <a href="#histoire" data-cursor>Notre histoire</a>
+      <a href="#pinsa" data-cursor>La Pinsa</a>
+      <a href="#carte" data-cursor>La carte</a>
+      <a href="#infos" data-cursor>Horaires</a>
+      <a href="#contact" data-cursor>Contact</a>
+      <a class="nav-cta" href="tel:+33493181054" data-cursor>
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Réserver
+      </a>
+    </nav>
+
+    <button class="nav-burger" id="navBurger" aria-label="Ouvrir le menu" aria-expanded="false" data-cursor>
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <main>
+
+    <!-- ══════════ HERO ══════════ -->
+    <section class="hero" id="accueil">
+      <canvas class="hero-embers" id="emberCanvas" aria-hidden="true"></canvas>
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-vignette" aria-hidden="true"></div>
+
+      <div class="hero-content">
+        <p class="hero-kicker">
+          <span class="tricolore" aria-hidden="true"><i></i><i></i><i></i></span>
+          Pizzeria artisanale · Nice
+        </p>
+
+        <h1 class="hero-title" aria-label="La Fiorentina">
+          <span class="hero-line"><span class="hero-word" data-split>La</span></span>
+          <span class="hero-line hero-line-em"><span class="hero-word" data-split>Fiorentina</span></span>
+        </h1>
+
+        <p class="hero-sub">Une histoire de famille, une passion du feu.<br>
+        Pizzas généreuses &amp; <strong>Pinsa Romana</strong> — pâte maison, produits frais, cuisson à la flamme du savoir-faire.</p>
+
+        <div class="hero-actions">
+          <a class="btn btn-fire" href="#carte" data-cursor data-magnetic>
+            <span>Découvrir la carte</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="tel:+33493181054" data-cursor data-magnetic>
+            <span>04 93 18 10 54</span>
+          </a>
+        </div>
+
+        <div class="hero-badges">
+          <span class="hero-badge" id="openBadge"><span class="pulse-dot"></span><span id="openBadgeText">Vérification des horaires…</span></span>
+        </div>
+      </div>
+
+      <a class="hero-scroll" href="#histoire" aria-label="Faire défiler" data-cursor>
+        <span class="hero-scroll-line"></span>
+        <span class="hero-scroll-txt">Défiler</span>
+      </a>
+    </section>
+
+    <!-- ══════════ BANDEAU MARQUEE ══════════ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Pizza artisanale</span><i>✦</i><span>Pinsa Romana</span><i>✦</i><span>Pâte maison</span><i>✦</i><span>Produits frais</span><i>✦</i><span>Sur place &amp; à emporter</span><i>✦</i>
+        <span>Pizza artisanale</span><i>✦</i><span>Pinsa Romana</span><i>✦</i><span>Pâte maison</span><i>✦</i><span>Produits frais</span><i>✦</i><span>Sur place &amp; à emporter</span><i>✦</i>
+        <span>Pizza artisanale</span><i>✦</i><span>Pinsa Romana</span><i>✦</i><span>Pâte maison</span><i>✦</i><span>Produits frais</span><i>✦</i><span>Sur place &amp; à emporter</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- ══════════ NOTRE HISTOIRE ══════════ -->
+    <section class="section storia" id="histoire">
+      <div class="container split">
+        <div class="split-text">
+          <p class="section-kicker reveal">Notre histoire</p>
+          <h2 class="section-title reveal">Bien plus qu'une <em>simple pizzeria</em></h2>
+          <p class="lead reveal">Chez <strong>La Fiorentina</strong>, la pizza est une affaire de famille. Dans notre atelier du quartier Sainte-Marguerite, chaque pâte est pétrie, maturée et façonnée à la main — comme le veut la tradition.</p>
+          <p class="reveal">Ici, pas de raccourci&nbsp;: des tomates parfumées, des fromages choisis, une persillade maison et cette touche niçoise qui fait toute la différence. Le tout servi dans un décor atypique et chaleureux, où l'on vient autant pour la pizza que pour l'ambiance.</p>
+
+          <ul class="stats reveal" aria-label="Chiffres clés">
+            <li><span class="stat-num" data-count="30" data-suffix="+">0</span><span class="stat-label">recettes à la carte</span></li>
+            <li><span class="stat-num" data-count="100" data-suffix="%">0</span><span class="stat-label">pâte faite maison</span></li>
+            <li><span class="stat-num" data-count="2" data-suffix="">0</span><span class="stat-label">façons de la déguster<br>— pizza ou pinsa</span></li>
+          </ul>
+        </div>
+
+        <div class="split-visual reveal" aria-hidden="true">
+          <div class="pizza-scene">
+            <svg class="pizza-art" id="pizzaArt" viewBox="0 0 400 400">
+              <defs>
+                <radialGradient id="crustGrad" cx="50%" cy="45%" r="60%">
+                  <stop offset="0%" stop-color="#f3d491"/>
+                  <stop offset="72%" stop-color="#e9b862"/>
+                  <stop offset="100%" stop-color="#c9863b"/>
+                </radialGradient>
+                <radialGradient id="sauceGrad" cx="50%" cy="45%" r="60%">
+                  <stop offset="0%" stop-color="#e8623a"/>
+                  <stop offset="100%" stop-color="#c73a2e"/>
+                </radialGradient>
+                <radialGradient id="cheeseGrad" cx="45%" cy="40%" r="65%">
+                  <stop offset="0%" stop-color="#f7e7b5"/>
+                  <stop offset="100%" stop-color="#efd28a"/>
+                </radialGradient>
+              </defs>
+              <circle cx="200" cy="200" r="185" fill="url(#crustGrad)"/>
+              <circle cx="200" cy="200" r="185" fill="none" stroke="#b06f2e" stroke-width="3" opacity=".5"/>
+              <circle cx="200" cy="200" r="158" fill="url(#sauceGrad)"/>
+              <path fill="url(#cheeseGrad)" d="M200,52 C280,52 348,118 348,198 C348,240 330,280 296,308 C262,336 240,346 200,348 C160,350 120,332 92,300 C66,270 52,240 52,198 C52,118 120,52 200,52 Z M200,80 C136,82 82,134 80,198 C78,236 94,266 118,290 C144,314 170,322 200,320 C232,318 258,306 280,284 C304,260 320,232 320,198 C320,132 266,78 200,80 Z" opacity="0"/>
+              <circle cx="200" cy="200" r="140" fill="url(#cheeseGrad)"/>
+              <!-- pepperoni -->
+              <g fill="#b8352b" stroke="#8e241d" stroke-width="2">
+                <circle cx="150" cy="140" r="24"/><circle cx="252" cy="128" r="22"/>
+                <circle cx="268" cy="232" r="24"/><circle cx="176" cy="262" r="23"/>
+                <circle cx="120" cy="212" r="20"/><circle cx="212" cy="188" r="21"/>
+              </g>
+              <!-- basilic -->
+              <g fill="#5c8f45">
+                <path d="M226 96 q14 -18 30 -8 q-4 20 -24 20 q-8 -2 -6 -12z"/>
+                <path d="M118 158 q-18 -12 -12 -30 q20 2 24 22 q0 10 -12 8z"/>
+                <path d="M232 286 q16 -14 30 -2 q-8 18 -26 16 q-10 -4 -4 -14z"/>
+                <path d="M148 322 q-4 -20 14 -26 q10 16 -2 28 q-8 6 -12 -2z"/>
+              </g>
+              <!-- olives -->
+              <g fill="#2f2a20">
+                <circle cx="196" cy="120" r="7"/><circle cx="132" cy="252" r="7"/>
+                <circle cx="292" cy="180" r="7"/><circle cx="216" cy="308" r="7"/>
+              </g>
+            </svg>
+            <div class="pizza-orbit" aria-hidden="true">
+              <span class="orbit-item o1">🍅</span>
+              <span class="orbit-item o2">🌿</span>
+              <span class="orbit-item o3">🧀</span>
+              <span class="orbit-item o4">🫒</span>
+            </div>
+            <div class="pizza-shadow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ LA PINSA ══════════ -->
+    <section class="section pinsa" id="pinsa">
+      <div class="pinsa-bg-word" aria-hidden="true">PINSA</div>
+      <div class="container">
+        <p class="section-kicker light reveal">Notre spécialité</p>
+        <h2 class="section-title light reveal">La <em>Pinsa Romana</em>,<br>l'autre légende de Rome</h2>
+        <p class="lead light reveal pinsa-lead">Ancêtre de la pizza née dans la Rome antique, la pinsa est pétrie à partir d'un mélange de farines de <strong>blé</strong> et de <strong>riz</strong>, longuement hydraté et maturé. Résultat&nbsp;: une pâte aérienne, croustillante dehors, moelleuse dedans — et bien plus digeste.</p>
+
+        <div class="pinsa-grid">
+          <article class="pinsa-card reveal" data-cursor>
+            <div class="pinsa-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c9 0 16 5 16 14 0 12-7 22-16 22S8 32 8 20C8 11 15 6 24 6z"/><path d="M17 20h.02M27 24h.02M21 31h.02"/></svg>
+            </div>
+            <h3>Pâte aérienne</h3>
+            <p>Une hydratation élevée et une longue maturation donnent une mie alvéolée, légère comme un nuage.</p>
+          </article>
+          <article class="pinsa-card reveal" data-cursor>
+            <div class="pinsa-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 34c0-11 6-24 14-24s14 13 14 24"/><path d="M6 34h36M14 40h20"/></svg>
+            </div>
+            <h3>Croustillante</h3>
+            <p>Saisie à haute température, elle croustille à chaque bouchée tout en restant fondante à cœur.</p>
+          </article>
+          <article class="pinsa-card reveal" data-cursor>
+            <div class="pinsa-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 42c10 0 16-8 16-17S24 6 24 6 8 16 8 25s6 17 16 17z"/><path d="M24 16v18M18 24l6 6 6-6"/></svg>
+            </div>
+            <h3>Plus digeste</h3>
+            <p>Farines de blé et de riz, indice glycémique plus bas&nbsp;: la gourmandise sans la lourdeur.</p>
+          </article>
+        </div>
+
+        <p class="pinsa-note reveal">La plupart de nos recettes existent en version <strong>pizza</strong> ou <strong>pinsa</strong> — à vous de choisir votre camp.</p>
+      </div>
+    </section>
+
+    <!-- ══════════ LA CARTE ══════════ -->
+    <section class="section carte" id="carte">
+      <div class="container">
+        <p class="section-kicker reveal">À emporter ou sur place</p>
+        <h2 class="section-title reveal">La <em>carte</em></h2>
+
+        <div class="carte-controls reveal">
+          <div class="carte-tabs" role="tablist" aria-label="Catégories de la carte">
+            <button class="carte-tab is-active" role="tab" aria-selected="true" data-cat="pizzas" data-cursor>Pizzas<span class="tab-long"> &amp; Pinsas</span></button>
+            <button class="carte-tab" role="tab" aria-selected="false" data-cat="salades" data-cursor>Salades</button>
+            <button class="carte-tab" role="tab" aria-selected="false" data-cat="desserts" data-cursor>Desserts</button>
+          </div>
+
+          <div class="base-toggle" id="baseToggle" role="group" aria-label="Choix de la base">
+            <button class="base-btn is-active" data-base="pizza" data-cursor>Base pizza</button>
+            <button class="base-btn" data-base="pinsa" data-cursor>Base pinsa</button>
+          </div>
+        </div>
+
+        <div class="carte-filters reveal" id="carteFilters">
+          <button class="chip is-active" data-filter="all" data-cursor>Toutes</button>
+          <button class="chip" data-filter="signature" data-cursor>✦ Signatures</button>
+          <button class="chip" data-filter="veggie" data-cursor>🌿 Végétariennes</button>
+          <button class="chip" data-filter="creme" data-cursor>Base crème</button>
+        </div>
+
+        <div class="carte-grid" id="carteGrid" role="tabpanel"></div>
+
+        <p class="carte-footnote reveal">Supplément ingrédient&nbsp;: 1,90&nbsp;€ · Tarifs à emporter — <strong>suggestions du chef</strong> selon le marché&nbsp;: salades, pâtes, viandes &amp; poissons. Prix susceptibles d'évoluer.</p>
+
+        <div class="carte-cta reveal">
+          <a class="btn btn-fire" href="https://delicity.com/pizzeria-fiorentina-nice" target="_blank" rel="noopener" data-cursor data-magnetic>
+            <span>Commander en livraison</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="tel:+33493181054" data-cursor data-magnetic><span>Commander par téléphone</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ AVIS ══════════ -->
+    <section class="section avis">
+      <div class="container">
+        <p class="section-kicker reveal">Ils nous font confiance</p>
+        <h2 class="section-title reveal">Le bouche à oreille,<br>notre <em>meilleure recette</em></h2>
+        <div class="avis-links reveal">
+          <a class="avis-card" href="https://www.google.com/maps/place/?q=place_id:ChIJU13P-P_QzRIR5oSWjsCd64w" target="_blank" rel="noopener" data-cursor>
+            <span class="avis-stars" aria-hidden="true">★★★★★</span>
+            <strong>Google</strong>
+            <span>Lire les avis</span>
+          </a>
+          <a class="avis-card" href="https://www.tripadvisor.fr/Restaurant_Review-g187234-d2144974-Reviews-Pizza_Fiorentina-Nice_French_Riviera_Cote_d_Azur_Provence_Alpes_Cote_d_Azur.html" target="_blank" rel="noopener" data-cursor>
+            <span class="avis-stars" aria-hidden="true">★★★★★</span>
+            <strong>TripAdvisor</strong>
+            <span>Lire les avis</span>
+          </a>
+          <a class="avis-card" href="https://www.yelp.com/biz/pizza-fiorentina-nice" target="_blank" rel="noopener" data-cursor>
+            <span class="avis-stars" aria-hidden="true">★★★★★</span>
+            <strong>Yelp</strong>
+            <span>Lire les avis</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ INFOS PRATIQUES ══════════ -->
+    <section class="section infos" id="infos">
+      <div class="container split">
+        <div class="split-text">
+          <p class="section-kicker reveal">Infos pratiques</p>
+          <h2 class="section-title reveal">Quand passe-t-on<br><em>à table&nbsp;?</em></h2>
+
+          <div class="open-status reveal" id="openStatus">
+            <span class="pulse-dot big"></span>
+            <span id="openStatusText">Vérification…</span>
+          </div>
+
+          <table class="hours reveal" id="hoursTable">
+            <caption class="sr-only">Horaires d'ouverture</caption>
+            <tbody>
+              <tr data-day="1"><th scope="row">Lundi</th><td>18h00 – 22h00</td></tr>
+              <tr data-day="2"><th scope="row">Mardi</th><td>11h45 – 14h00 · 18h00 – 22h00</td></tr>
+              <tr data-day="3"><th scope="row">Mercredi</th><td>11h45 – 14h00 · 18h00 – 22h00</td></tr>
+              <tr data-day="4"><th scope="row">Jeudi</th><td>11h45 – 14h00 · 18h00 – 22h00</td></tr>
+              <tr data-day="5"><th scope="row">Vendredi</th><td>11h45 – 14h00 · 18h00 – 22h00</td></tr>
+              <tr data-day="6"><th scope="row">Samedi</th><td>18h00 – 22h00</td></tr>
+              <tr data-day="0" class="closed"><th scope="row">Dimanche</th><td>Fermé</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="split-visual">
+          <div class="map-wrap reveal">
+            <iframe
+              title="Plan d'accès — La Fiorentina, 29 Avenue Sainte-Marguerite, Nice"
+              src="https://www.google.com/maps?q=Pizza+Fiorentina,+29+Avenue+Sainte-Marguerite,+06200+Nice&output=embed"
+              loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+          </div>
+          <address class="infos-address reveal">
+            <p><strong>La Fiorentina</strong><br>29 Avenue Sainte-Marguerite<br>06200 Nice</p>
+            <p><a href="tel:+33493181054" data-cursor>04 93 18 10 54</a></p>
+            <a class="btn btn-ghost btn-sm" href="https://maps.google.com/?q=43.67742,7.2224896" target="_blank" rel="noopener" data-cursor><span>Itinéraire</span></a>
+          </address>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ CTA FINAL ══════════ -->
+    <section class="section final-cta" id="contact">
+      <canvas class="hero-embers" id="emberCanvas2" aria-hidden="true"></canvas>
+      <div class="container">
+        <h2 class="final-title reveal">Una tavola<br><em>vi aspetta.</em></h2>
+        <p class="lead light reveal">Une table vous attend. Réservez, commandez, ou passez simplement nous dire <em>buongiorno</em>.</p>
+        <div class="hero-actions reveal">
+          <a class="btn btn-fire btn-lg" href="tel:+33493181054" data-cursor data-magnetic><span>Réserver une table</span></a>
+          <a class="btn btn-ghost btn-lg" href="https://delicity.com/pizzeria-fiorentina-nice" target="_blank" rel="noopener" data-cursor data-magnetic><span>Commander en ligne</span></a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-brand">La <em>Fiorentina</em></p>
+        <p class="footer-tag">Pizzeria artisanale — Pizza &amp; Pinsa Romana<br>Nice, quartier Sainte-Marguerite</p>
+      </div>
+      <div>
+        <p class="footer-head">Contact</p>
+        <p>29 Avenue Sainte-Marguerite<br>06200 Nice</p>
+        <p><a href="tel:+33493181054" data-cursor>04 93 18 10 54</a></p>
+      </div>
+      <div>
+        <p class="footer-head">Suivez-nous</p>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/fiorentina_nice/" target="_blank" rel="noopener" aria-label="Instagram" data-cursor>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>
+          </a>
+          <a href="https://www.facebook.com/PizzaFiorentinaNice" target="_blank" rel="noopener" aria-label="Facebook" data-cursor>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="tricolore" aria-hidden="true"><i></i><i></i><i></i></span>
+      <p>© <span id="year"></span> La Fiorentina — Fatto a mano, con amore, a Nizza.</p>
+    </div>
+  </footer>
+
+  <!-- Bouton flottant retour en haut -->
+  <button class="to-top" id="toTop" aria-label="Retour en haut" data-cursor>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
