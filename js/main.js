@@ -124,24 +124,48 @@
     setTimeout(finish, 3800); /* hard safety */
   }
 
-  /* ── nav state, progress, to-top ───────────────────────────── */
+  /* ── nav state, progress, to-top, mobile CTA ───────────────── */
   function initScrollUI() {
     const nav = document.getElementById("siteNav");
     const bar = document.getElementById("scrollProgressBar");
     const toTop = document.getElementById("toTop");
+    const mobileCta = document.getElementById("mobileCta");
+    const footer = document.querySelector(".footer");
+    let ticking = false;
     const onScroll = () => {
-      const y = window.scrollY;
-      if (nav) nav.classList.toggle("scrolled", y > 30);
-      if (y < 200) $$(".nav-links a").forEach(l => l.classList.remove("active"));
-      if (bar) {
-        const h = document.documentElement.scrollHeight - window.innerHeight;
-        bar.style.transform = `scaleX(${h > 0 ? Math.min(1, y / h) : 0})`;
-      }
-      if (toTop) toTop.classList.toggle("show", y > 900);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const y = window.scrollY;
+        if (nav) nav.classList.toggle("scrolled", y > 30);
+        if (y < 200) $$(".nav-links a").forEach(l => l.classList.remove("active"));
+        if (bar) {
+          const h = document.documentElement.scrollHeight - window.innerHeight;
+          bar.style.transform = `scaleX(${h > 0 ? Math.min(1, y / h) : 0})`;
+        }
+        if (toTop) toTop.classList.toggle("show", y > 900);
+        if (mobileCta) {
+          const nearFooter = footer && footer.getBoundingClientRect().top < window.innerHeight - 40;
+          mobileCta.classList.toggle("show", y > 620 && !nearFooter);
+        }
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     if (toTop) toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" }));
+  }
+
+  /* ── FAQ accordion (one open at a time) ────────────────────── */
+  function initFaq() {
+    const items = $$(".faq-item");
+    items.forEach(item => {
+      const summary = item.querySelector("summary");
+      if (!summary) return;
+      summary.addEventListener("click", () => {
+        if (!item.open) items.forEach(o => { if (o !== item) o.open = false; });
+      });
+    });
   }
 
   /* ── active nav link ───────────────────────────────────────── */
@@ -224,18 +248,24 @@
   function initCounters() {
     const nums = $$(".counter-num");
     if (!nums.length) return;
+    const lang = window.fwGetLang ? window.fwGetLang() : "de";
+    const decSep = lang === "en" ? "." : ",";
+    const fmtNum = (v, decimals, plain) => {
+      if (decimals) return v.toFixed(decimals).replace(".", decSep);
+      return plain ? String(v) : Math.round(v).toLocaleString(lang === "en" ? "en" : "de");
+    };
     const animate = (el) => {
       const target = +el.dataset.count;
       const suffix = el.dataset.suffix || "";
       const plain = el.dataset.plain === "1";
-      if (reduceMotion) { el.textContent = (plain ? target : target.toLocaleString()) + suffix; return; }
+      const decimals = +(el.dataset.decimals || 0);
+      if (reduceMotion) { el.textContent = fmtNum(target, decimals, plain) + suffix; return; }
       const dur = 1600;
       const start = performance.now();
       const step = (now) => {
         const p = Math.min(1, (now - start) / dur);
         const eased = 1 - Math.pow(1 - p, 3);
-        const val = Math.round(target * eased);
-        el.textContent = (plain ? String(val) : val.toLocaleString()) + suffix;
+        el.textContent = fmtNum(target * eased, decimals, plain) + suffix;
         if (p < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
@@ -398,6 +428,7 @@
     initParallax();
     initMap();
     initAnchors();
+    initFaq();
     startRotator();
     const year = document.getElementById("year");
     if (year) year.textContent = new Date().getFullYear();

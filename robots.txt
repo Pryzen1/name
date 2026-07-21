@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://pryzen1.github.io/name/fachwerk/sitemap.xml
