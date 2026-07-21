@@ -1,0 +1,456 @@
+/* ═══════════════════════════════════════════════════════════════
+   fachwerk · i18n — DE / EN / FR / ES / HR / LB
+   ═══════════════════════════════════════════════════════════════ */
+"use strict";
+
+const I18N = {
+  /* ────────────────────────── DEUTSCH ───────────────────────── */
+  de: {
+    "meta.title": "fachwerk · Restaurant Bergisch Neukirchen — Mediterrane Küche in Leverkusen",
+    "meta.desc": "Mediterrane Genusskultur im historischen Fachwerkhaus: frischer Fisch, Black-Angus-Steaks, Tapas & kroatische Spezialitäten in Leverkusen.",
+    "pl.sub": "Restaurant · Bergisch Neukirchen",
+    "a11y.skip": "Zum Inhalt springen",
+    "brand.tag": "Restaurant · seit 2015",
+    "nav.story": "Über uns", "nav.signature": "Klassiker", "nav.menu": "Speisekarte",
+    "nav.experience": "Erlebnis", "nav.contact": "Kontakt", "nav.reserve": "Reservieren",
+    "hero.eyebrow": "Restaurant · Bergisch Neukirchen · Leverkusen",
+    "hero.script": "Genusskultur seit 2015",
+    "hero.lead": "Mediterrane Küche, frischer Fisch & Black-Angus-Steaks — serviert im Herzen eines historischen Fachwerkhauses.",
+    "hero.cta1": "Tisch reservieren", "hero.cta2": "Speisekarte entdecken",
+    "hero.award": "Nr. 1 Fischrestaurant Leverkusen", "hero.scroll": "Entdecken",
+    "hero.rotator": ["Frischer Fisch vom Markt", "Black-Angus-Steaks", "Tapas & Antipasti", "Kroatische Buzara", "Hausgebackenes Brot", "Erlesene Weine"],
+    "marquee": ["Antipasti", "Tapas", "Pesce Fresco", "Steakhouse", "Buzara", "Vini", "Dolci", "Terrasse"],
+    "story.badge": "Qualität seit", "story.eyebrow": "Willkommen im fachwerk",
+    "story.title": "Wo bergisches Fachwerk auf das Mittelmeer trifft",
+    "story.lead": "Hinter jahrhundertealten Balken verbinden wir bergische Gemütlichkeit mit mediterraner Lebensfreude — Naturstein, Kerzenlicht und der Duft frischer Kräuter inklusive.",
+    "story.p1": "Seit 2015 empfangen wir unsere Gäste in familiärer Atmosphäre. Küchenchefin Tajana Jurić und ihr Team bereiten jedes Gericht persönlich zu — mit frischem Fisch vom täglichen Markt, erstklassigem Black-Angus-Fleisch und regionalem sowie mediterranem Gemüse von Lieferanten der Spitzengastronomie.",
+    "story.f1t": "Fangfrischer Fisch", "story.f1d": "täglich vom Markt, ganz oder als Filet gegrillt",
+    "story.f2t": "Black-Angus-Steaks", "story.f2d": "auf den Punkt gegrillt, vom Hüftsteak bis zum Chateaubriand",
+    "story.f3t": "Tapas & Antipasti", "story.f3d": "spanische und italienische Köstlichkeiten zum Teilen",
+    "story.f4t": "Erlesene Weine", "story.f4d": "aus Deutschland, Italien, Frankreich, Spanien & Kroatien",
+    "count.c1": "Gastgeber seit", "count.c2": "Gerichte & Weine", "count.c3": "Weinländer",
+    "sig.eyebrow": "Unsere Klassiker", "sig.title": "Handwerk, das man schmeckt",
+    "sig.sub": "Sechs Gerichte, für die unsere Gäste immer wiederkommen.",
+    "sig.c1tag": "Kroatische Art", "sig.c1d": "Meeresfrüchte in Tomaten, Kräutern & Knoblauch — wie an der dalmatinischen Küste.",
+    "sig.c2tag": "Steakhouse", "sig.c2d": "Zartes Black-Angus-Filet, auf den Punkt gegrillt — mit Kräuterbutter oder Trüffelsauce.",
+    "sig.c3tag": "Vom Grill", "sig.c3t": "Lachsfilet vom Grill", "sig.c3d": "Fangfrischer Lachs auf Blattspinat, mit Zitrone und feinem Kräuteröl.",
+    "sig.c4tag": "Antipasti", "sig.c4t": "Carpaccio & Vitello", "sig.c4d": "Hauchzarte Klassiker — vom Rinderfilet, Thunfisch oder als Duett mit Vitello Tonnato.",
+    "sig.c5tag": "Vegetarisch", "sig.c5t": "Mediterranes Grillgemüse", "sig.c5d": "Sonnengereiftes Gemüse mit Ziegenkäse, Olivenöl und frischen Kräutern.",
+    "sig.c6tag": "Dolce Vita", "sig.c6t": "Tiramisu der Casa", "sig.c6d": "Hausgemacht nach Familienrezept — der perfekte Abschluss eines Abends.",
+    "chef.quote": "„Jeder Teller, der unsere Küche verlässt, geht durch meine Hände. Kochen ist für mich Gastfreundschaft — man schmeckt, ob mit Liebe gekocht wurde.“",
+    "chef.role": "Küchenchefin & Gastgeberin",
+    "menu.eyebrow": "La Carta", "menu.title": "Die Speisekarte",
+    "menu.sub": "Vom Antipasto bis zum Digestif — alles frisch, alles hausgemacht.",
+    "menu.search": "Gericht suchen …", "menu.veg": "vegetarisch", "menu.vegan": "vegan", "menu.genuss": "fachwerk-Genuß",
+    "menu.note": "Alle Preise in Euro inkl. MwSt. Es gilt die aktuelle Karte im Restaurant — Änderungen vorbehalten. Informationen zu Allergenen & Zusatzstoffen geben wir Ihnen gerne persönlich.",
+    "menu.empty": "Kein Gericht gefunden — probieren Sie einen anderen Suchbegriff.",
+    "menu.pp": "p. P.", "menu.for2": "für 2", "menu.forN": "für {n}",
+    "exp.eyebrow": "Mehr als ein Abendessen", "exp.title": "Das fachwerk-Erlebnis",
+    "exp.c1t": "Innenhof-Terrasse", "exp.c1d": "Laue Sommerabende zwischen historischen Mauern — mit einem Glas Wein unter freiem Himmel.",
+    "exp.c2t": "Feiern auf der Empore", "exp.c2d": "Geburtstage, Familienfeste, Firmenessen: Unsere Empore bietet den privaten Rahmen für Ihre Feier.",
+    "exp.c3t": "Frische vom Markt", "exp.c3d": "Unser Fisch kommt vom täglichen Markt, Brot backen wir selbst — Saisonales wechselt mit dem Kalender.",
+    "awd.eyebrow": "Ausgezeichnet", "awd.title": "Von Gästen geliebt, von Kennern empfohlen",
+    "awd.text": "Restaurant Guru kürte das fachwerk zum Nr.-1-Fischrestaurant in Leverkusen und empfiehlt unsere Meeresfrüchte als die besten der Stadt. Auch restaurant-ranglisten.de führt uns unter den empfohlenen Adressen der Region.",
+    "awd.l1": "Nr. 1 Fischrestaurant Leverkusen — Restaurant Guru",
+    "awd.l2": "„Das beste Meeresfrüchte“ — empfohlen von Restaurant Guru",
+    "awd.l3": "Empfehlung — restaurant-ranglisten.de",
+    "ct.eyebrow": "Reservierung & Anfahrt", "ct.title": "Wir decken den Tisch für Sie",
+    "ct.resTitle": "Reservierung",
+    "ct.resText": "Rufen Sie uns an — wir finden den passenden Tisch, ob romantisches Dinner oder große Tafel.",
+    "ct.hoursTitle": "Öffnungszeiten", "ct.closed": "Ruhetag",
+    "ct.mapLoad": "Karte laden", "ct.route": "Route planen",
+    "day.mon": "Montag", "day.tue": "Dienstag", "day.wed": "Mittwoch", "day.thu": "Donnerstag",
+    "day.fri": "Freitag", "day.sat": "Samstag", "day.sun": "Sonntag", "day.holiday": "Feiertage",
+    "status.open": "Jetzt geöffnet · bis {t}",
+    "status.today": "Öffnet heute um {t}",
+    "status.day": "Geschlossen · öffnet {d} um {t}",
+    "ft.tag": "Mediterrane Genusskultur im historischen Fachwerkhaus — mitten in Bergisch Neukirchen.",
+    "ft.nav": "Navigation", "ft.contact": "Kontakt", "ft.hours": "Öffnungszeiten",
+    "ft.h1": "Di – Sa", "ft.h2": "Mi bis", "ft.fine": "Mit ♥ gekocht — und mit ♥ gebaut."
+  },
+
+  /* ────────────────────────── ENGLISH ───────────────────────── */
+  en: {
+    "meta.title": "fachwerk · Restaurant Bergisch Neukirchen — Mediterranean dining in Leverkusen",
+    "meta.desc": "Mediterranean dining in a historic half-timbered house: fresh fish, Black Angus steaks, tapas & Croatian specialities in Leverkusen.",
+    "pl.sub": "Restaurant · Bergisch Neukirchen",
+    "a11y.skip": "Skip to content",
+    "brand.tag": "Restaurant · since 2015",
+    "nav.story": "About", "nav.signature": "Classics", "nav.menu": "Menu",
+    "nav.experience": "Experience", "nav.contact": "Contact", "nav.reserve": "Book a table",
+    "hero.eyebrow": "Restaurant · Bergisch Neukirchen · Leverkusen",
+    "hero.script": "A culture of taste since 2015",
+    "hero.lead": "Mediterranean cuisine, fresh fish & Black Angus steaks — served in the heart of a historic half-timbered house.",
+    "hero.cta1": "Book a table", "hero.cta2": "Explore the menu",
+    "hero.award": "No. 1 fish restaurant in Leverkusen", "hero.scroll": "Discover",
+    "hero.rotator": ["Fresh fish from the market", "Black Angus steaks", "Tapas & antipasti", "Croatian buzara", "Home-baked bread", "Fine wines"],
+    "marquee": ["Antipasti", "Tapas", "Fresh Fish", "Steakhouse", "Buzara", "Wines", "Dolci", "Terrace"],
+    "story.badge": "Quality since", "story.eyebrow": "Welcome to fachwerk",
+    "story.title": "Where Bergisch timber framing meets the Mediterranean",
+    "story.lead": "Behind centuries-old beams we blend Bergisch cosiness with Mediterranean joie de vivre — natural stone, candlelight and the scent of fresh herbs included.",
+    "story.p1": "We have welcomed our guests in a family atmosphere since 2015. Head chef Tajana Jurić and her team prepare every dish personally — with fresh fish from the daily market, prime Black Angus beef, and regional and Mediterranean vegetables from suppliers who serve top-tier restaurants.",
+    "story.f1t": "Freshly caught fish", "story.f1d": "from the market every day, grilled whole or as a fillet",
+    "story.f2t": "Black Angus steaks", "story.f2d": "grilled to the point, from rump to Chateaubriand",
+    "story.f3t": "Tapas & antipasti", "story.f3d": "Spanish and Italian delicacies made for sharing",
+    "story.f4t": "Fine wines", "story.f4d": "from Germany, Italy, France, Spain & Croatia",
+    "count.c1": "Your hosts since", "count.c2": "Dishes & wines", "count.c3": "Wine countries",
+    "sig.eyebrow": "Our classics", "sig.title": "Craft you can taste",
+    "sig.sub": "Six dishes our guests keep coming back for.",
+    "sig.c1tag": "Croatian style", "sig.c1d": "Seafood in tomatoes, herbs & garlic — just like on the Dalmatian coast.",
+    "sig.c2tag": "Steakhouse", "sig.c2d": "Tender Black Angus fillet, grilled to perfection — with herb butter or truffle sauce.",
+    "sig.c3tag": "From the grill", "sig.c3t": "Grilled salmon fillet", "sig.c3d": "Freshly caught salmon on leaf spinach with lemon and delicate herb oil.",
+    "sig.c4tag": "Antipasti", "sig.c4t": "Carpaccio & vitello", "sig.c4d": "Wafer-thin classics — beef fillet, tuna, or as a duet with vitello tonnato.",
+    "sig.c5tag": "Vegetarian", "sig.c5t": "Mediterranean grilled vegetables", "sig.c5d": "Sun-ripened vegetables with goat cheese, olive oil and fresh herbs.",
+    "sig.c6tag": "Dolce vita", "sig.c6t": "Tiramisu della casa", "sig.c6d": "Homemade to a family recipe — the perfect end to an evening.",
+    "chef.quote": "“Every plate that leaves our kitchen passes through my hands. For me, cooking is hospitality — you can taste when food is made with love.”",
+    "chef.role": "Head chef & host",
+    "menu.eyebrow": "La Carta", "menu.title": "The Menu",
+    "menu.sub": "From antipasto to digestif — everything fresh, everything homemade.",
+    "menu.search": "Search for a dish …", "menu.veg": "vegetarian", "menu.vegan": "vegan", "menu.genuss": "fachwerk signature",
+    "menu.note": "All prices in euros incl. VAT. The current menu in the restaurant applies — subject to change. We are happy to advise you personally on allergens & additives.",
+    "menu.empty": "No dish found — try a different search term.",
+    "menu.pp": "p. p.", "menu.for2": "for 2", "menu.forN": "for {n}",
+    "exp.eyebrow": "More than dinner", "exp.title": "The fachwerk experience",
+    "exp.c1t": "Courtyard terrace", "exp.c1d": "Mild summer evenings between historic walls — with a glass of wine under the open sky.",
+    "exp.c2t": "Celebrations on the gallery", "exp.c2d": "Birthdays, family gatherings, company dinners: our gallery floor offers a private setting for your celebration.",
+    "exp.c3t": "Fresh from the market", "exp.c3d": "Our fish comes from the daily market and we bake our own bread — seasonal dishes change with the calendar.",
+    "awd.eyebrow": "Award-winning", "awd.title": "Loved by guests, recommended by connoisseurs",
+    "awd.text": "Restaurant Guru named fachwerk the no. 1 fish restaurant in Leverkusen and recommends our seafood as the best in town. restaurant-ranglisten.de also lists us among the region's recommended addresses.",
+    "awd.l1": "No. 1 fish restaurant in Leverkusen — Restaurant Guru",
+    "awd.l2": "“Best seafood” — recommended by Restaurant Guru",
+    "awd.l3": "Recommended — restaurant-ranglisten.de",
+    "ct.eyebrow": "Reservations & directions", "ct.title": "We'll set the table for you",
+    "ct.resTitle": "Reservations",
+    "ct.resText": "Give us a call — we'll find the right table, whether it's a romantic dinner or a long family feast.",
+    "ct.hoursTitle": "Opening hours", "ct.closed": "Closed",
+    "ct.mapLoad": "Load map", "ct.route": "Get directions",
+    "day.mon": "Monday", "day.tue": "Tuesday", "day.wed": "Wednesday", "day.thu": "Thursday",
+    "day.fri": "Friday", "day.sat": "Saturday", "day.sun": "Sunday", "day.holiday": "public holidays",
+    "status.open": "Open now · until {t}",
+    "status.today": "Opens today at {t}",
+    "status.day": "Closed · opens {d} at {t}",
+    "ft.tag": "Mediterranean dining culture in a historic half-timbered house — in the heart of Bergisch Neukirchen.",
+    "ft.nav": "Navigation", "ft.contact": "Contact", "ft.hours": "Opening hours",
+    "ft.h1": "Tue – Sat", "ft.h2": "Wed until", "ft.fine": "Cooked with ♥ — and built with ♥."
+  },
+
+  /* ────────────────────────── FRANÇAIS ──────────────────────── */
+  fr: {
+    "meta.title": "fachwerk · Restaurant Bergisch Neukirchen — Cuisine méditerranéenne à Leverkusen",
+    "meta.desc": "L'art de vivre méditerranéen dans une maison à colombages historique : poisson frais, steaks Black Angus, tapas & spécialités croates à Leverkusen.",
+    "pl.sub": "Restaurant · Bergisch Neukirchen",
+    "a11y.skip": "Aller au contenu",
+    "brand.tag": "Restaurant · depuis 2015",
+    "nav.story": "À propos", "nav.signature": "Classiques", "nav.menu": "Carte",
+    "nav.experience": "Expérience", "nav.contact": "Contact", "nav.reserve": "Réserver",
+    "hero.eyebrow": "Restaurant · Bergisch Neukirchen · Leverkusen",
+    "hero.script": "L'art du goût depuis 2015",
+    "hero.lead": "Cuisine méditerranéenne, poisson frais & steaks Black Angus — servis au cœur d'une maison à colombages historique.",
+    "hero.cta1": "Réserver une table", "hero.cta2": "Découvrir la carte",
+    "hero.award": "N° 1 des restaurants de poisson à Leverkusen", "hero.scroll": "Découvrir",
+    "hero.rotator": ["Poisson frais du marché", "Steaks Black Angus", "Tapas & antipasti", "Buzara croate", "Pain maison", "Vins d'exception"],
+    "marquee": ["Antipasti", "Tapas", "Poisson frais", "Steakhouse", "Buzara", "Vins", "Dolci", "Terrasse"],
+    "story.badge": "Qualité depuis", "story.eyebrow": "Bienvenue au fachwerk",
+    "story.title": "Là où les colombages du Bergisches Land rencontrent la Méditerranée",
+    "story.lead": "Derrière des poutres centenaires, nous marions la convivialité rhénane à la joie de vivre méditerranéenne — pierre naturelle, lueur des bougies et parfum d'herbes fraîches compris.",
+    "story.p1": "Depuis 2015, nous accueillons nos hôtes dans une atmosphère familiale. La cheffe Tajana Jurić et son équipe préparent chaque plat personnellement — avec du poisson frais du marché quotidien, du bœuf Black Angus de première qualité et des légumes régionaux et méditerranéens issus de fournisseurs de la haute gastronomie.",
+    "story.f1t": "Poisson ultra-frais", "story.f1d": "du marché chaque jour, grillé entier ou en filet",
+    "story.f2t": "Steaks Black Angus", "story.f2d": "grillés à la perfection, du rumsteck au chateaubriand",
+    "story.f3t": "Tapas & antipasti", "story.f3d": "délices espagnols et italiens à partager",
+    "story.f4t": "Vins d'exception", "story.f4d": "d'Allemagne, d'Italie, de France, d'Espagne & de Croatie",
+    "count.c1": "Vos hôtes depuis", "count.c2": "Plats & vins", "count.c3": "Pays viticoles",
+    "sig.eyebrow": "Nos classiques", "sig.title": "Un savoir-faire qui se goûte",
+    "sig.sub": "Six plats pour lesquels nos clients reviennent toujours.",
+    "sig.c1tag": "À la croate", "sig.c1d": "Fruits de mer aux tomates, herbes & ail — comme sur la côte dalmate.",
+    "sig.c2tag": "Steakhouse", "sig.c2d": "Filet Black Angus fondant, grillé à la perfection — beurre aux herbes ou sauce à la truffe.",
+    "sig.c3tag": "Au gril", "sig.c3t": "Filet de saumon grillé", "sig.c3d": "Saumon ultra-frais sur lit d'épinards, citron et fine huile aux herbes.",
+    "sig.c4tag": "Antipasti", "sig.c4t": "Carpaccio & vitello", "sig.c4d": "Classiques taillés finement — filet de bœuf, thon, ou en duo avec le vitello tonnato.",
+    "sig.c5tag": "Végétarien", "sig.c5t": "Légumes grillés méditerranéens", "sig.c5d": "Légumes gorgés de soleil, fromage de chèvre, huile d'olive et herbes fraîches.",
+    "sig.c6tag": "Dolce vita", "sig.c6t": "Tiramisu della casa", "sig.c6d": "Fait maison selon la recette familiale — la fin parfaite d'une belle soirée.",
+    "chef.quote": "« Chaque assiette qui quitte notre cuisine passe entre mes mains. Pour moi, cuisiner c'est recevoir — on goûte quand un plat est fait avec amour. »",
+    "chef.role": "Cheffe de cuisine & hôtesse",
+    "menu.eyebrow": "La Carta", "menu.title": "La Carte",
+    "menu.sub": "De l'antipasto au digestif — tout est frais, tout est fait maison.",
+    "menu.search": "Rechercher un plat …", "menu.veg": "végétarien", "menu.vegan": "végan", "menu.genuss": "signature fachwerk",
+    "menu.note": "Tous les prix en euros, TVA incluse. La carte en vigueur au restaurant fait foi — sous réserve de modifications. Nous vous renseignons volontiers sur les allergènes & additifs.",
+    "menu.empty": "Aucun plat trouvé — essayez un autre terme.",
+    "menu.pp": "p. pers.", "menu.for2": "pour 2", "menu.forN": "pour {n}",
+    "exp.eyebrow": "Plus qu'un dîner", "exp.title": "L'expérience fachwerk",
+    "exp.c1t": "Terrasse dans la cour", "exp.c1d": "Douces soirées d'été entre des murs chargés d'histoire — un verre de vin à la belle étoile.",
+    "exp.c2t": "Fêtes sur la mezzanine", "exp.c2d": "Anniversaires, fêtes de famille, dîners d'entreprise : notre mezzanine offre un cadre privé à vos célébrations.",
+    "exp.c3t": "Fraîcheur du marché", "exp.c3d": "Notre poisson vient du marché quotidien, notre pain est pétri maison — la carte suit les saisons.",
+    "awd.eyebrow": "Récompensé", "awd.title": "Aimé des clients, recommandé des connaisseurs",
+    "awd.text": "Restaurant Guru a élu fachwerk n° 1 des restaurants de poisson à Leverkusen et recommande nos fruits de mer comme les meilleurs de la ville. restaurant-ranglisten.de nous compte aussi parmi les adresses recommandées de la région.",
+    "awd.l1": "N° 1 des restaurants de poisson à Leverkusen — Restaurant Guru",
+    "awd.l2": "« Les meilleurs fruits de mer » — recommandé par Restaurant Guru",
+    "awd.l3": "Recommandation — restaurant-ranglisten.de",
+    "ct.eyebrow": "Réservation & accès", "ct.title": "Nous dressons la table pour vous",
+    "ct.resTitle": "Réservation",
+    "ct.resText": "Appelez-nous — nous trouverons la table idéale, dîner romantique ou grande tablée.",
+    "ct.hoursTitle": "Horaires d'ouverture", "ct.closed": "Fermé",
+    "ct.mapLoad": "Charger la carte", "ct.route": "Itinéraire",
+    "day.mon": "Lundi", "day.tue": "Mardi", "day.wed": "Mercredi", "day.thu": "Jeudi",
+    "day.fri": "Vendredi", "day.sat": "Samedi", "day.sun": "Dimanche", "day.holiday": "jours fériés",
+    "status.open": "Ouvert · jusqu'à {t}",
+    "status.today": "Ouvre aujourd'hui à {t}",
+    "status.day": "Fermé · ouvre {d} à {t}",
+    "ft.tag": "L'art de vivre méditerranéen dans une maison à colombages historique — au cœur de Bergisch Neukirchen.",
+    "ft.nav": "Navigation", "ft.contact": "Contact", "ft.hours": "Horaires",
+    "ft.h1": "Mar – Sam", "ft.h2": "Mer jusqu'à", "ft.fine": "Cuisiné avec ♥ — et conçu avec ♥."
+  },
+
+  /* ────────────────────────── ESPAÑOL ───────────────────────── */
+  es: {
+    "meta.title": "fachwerk · Restaurant Bergisch Neukirchen — Cocina mediterránea en Leverkusen",
+    "meta.desc": "Cultura gastronómica mediterránea en una histórica casa de entramado de madera: pescado fresco, steaks Black Angus, tapas y especialidades croatas en Leverkusen.",
+    "pl.sub": "Restaurante · Bergisch Neukirchen",
+    "a11y.skip": "Saltar al contenido",
+    "brand.tag": "Restaurante · desde 2015",
+    "nav.story": "Nosotros", "nav.signature": "Clásicos", "nav.menu": "Carta",
+    "nav.experience": "Experiencia", "nav.contact": "Contacto", "nav.reserve": "Reservar",
+    "hero.eyebrow": "Restaurante · Bergisch Neukirchen · Leverkusen",
+    "hero.script": "Cultura del sabor desde 2015",
+    "hero.lead": "Cocina mediterránea, pescado fresco y steaks Black Angus — servidos en el corazón de una histórica casa de entramado de madera.",
+    "hero.cta1": "Reservar mesa", "hero.cta2": "Descubrir la carta",
+    "hero.award": "N.º 1 en pescado de Leverkusen", "hero.scroll": "Descubrir",
+    "hero.rotator": ["Pescado fresco del mercado", "Steaks Black Angus", "Tapas & antipasti", "Buzara croata", "Pan casero", "Vinos selectos"],
+    "marquee": ["Antipasti", "Tapas", "Pescado fresco", "Steakhouse", "Buzara", "Vinos", "Dolci", "Terraza"],
+    "story.badge": "Calidad desde", "story.eyebrow": "Bienvenidos a fachwerk",
+    "story.title": "Donde el entramado bergisch se encuentra con el Mediterráneo",
+    "story.lead": "Tras vigas centenarias unimos la calidez alemana con la alegría mediterránea — piedra natural, luz de velas y aroma de hierbas frescas incluidos.",
+    "story.p1": "Desde 2015 recibimos a nuestros clientes en un ambiente familiar. La chef Tajana Jurić y su equipo preparan personalmente cada plato — con pescado fresco del mercado diario, carne Black Angus de primera y verduras regionales y mediterráneas de proveedores de la alta gastronomía.",
+    "story.f1t": "Pescado recién capturado", "story.f1d": "del mercado cada día, a la parrilla entero o en filete",
+    "story.f2t": "Steaks Black Angus", "story.f2d": "al punto perfecto, del cadera al chateaubriand",
+    "story.f3t": "Tapas & antipasti", "story.f3d": "delicias españolas e italianas para compartir",
+    "story.f4t": "Vinos selectos", "story.f4d": "de Alemania, Italia, Francia, España y Croacia",
+    "count.c1": "Sus anfitriones desde", "count.c2": "Platos y vinos", "count.c3": "Países vinícolas",
+    "sig.eyebrow": "Nuestros clásicos", "sig.title": "Artesanía que se saborea",
+    "sig.sub": "Seis platos por los que nuestros clientes siempre vuelven.",
+    "sig.c1tag": "Al estilo croata", "sig.c1d": "Mariscos en tomate, hierbas y ajo — como en la costa dálmata.",
+    "sig.c2tag": "Steakhouse", "sig.c2d": "Tierno filete Black Angus a la parrilla — con mantequilla de hierbas o salsa de trufa.",
+    "sig.c3tag": "A la parrilla", "sig.c3t": "Filete de salmón a la parrilla", "sig.c3d": "Salmón fresquísimo sobre espinacas, con limón y delicado aceite de hierbas.",
+    "sig.c4tag": "Antipasti", "sig.c4t": "Carpaccio & vitello", "sig.c4d": "Clásicos en láminas finísimas — de solomillo, atún o en dúo con vitello tonnato.",
+    "sig.c5tag": "Vegetariano", "sig.c5t": "Verduras mediterráneas a la parrilla", "sig.c5d": "Verduras maduradas al sol con queso de cabra, aceite de oliva y hierbas frescas.",
+    "sig.c6tag": "Dolce vita", "sig.c6t": "Tiramisú de la casa", "sig.c6d": "Casero según la receta familiar — el final perfecto de la velada.",
+    "chef.quote": "«Cada plato que sale de nuestra cocina pasa por mis manos. Para mí, cocinar es hospitalidad — se nota cuando se cocina con amor.»",
+    "chef.role": "Chef & anfitriona",
+    "menu.eyebrow": "La Carta", "menu.title": "La Carta",
+    "menu.sub": "Del antipasto al digestivo — todo fresco, todo casero.",
+    "menu.search": "Buscar un plato …", "menu.veg": "vegetariano", "menu.vegan": "vegano", "menu.genuss": "especialidad fachwerk",
+    "menu.note": "Todos los precios en euros, IVA incluido. Rige la carta actual del restaurante — sujeta a cambios. Le informamos con gusto sobre alérgenos y aditivos.",
+    "menu.empty": "No se encontró ningún plato — pruebe con otro término.",
+    "menu.pp": "p. pers.", "menu.for2": "para 2", "menu.forN": "para {n}",
+    "exp.eyebrow": "Más que una cena", "exp.title": "La experiencia fachwerk",
+    "exp.c1t": "Terraza en el patio", "exp.c1d": "Suaves noches de verano entre muros históricos — con una copa de vino bajo las estrellas.",
+    "exp.c2t": "Celebraciones en la galería", "exp.c2d": "Cumpleaños, fiestas familiares, cenas de empresa: nuestra galería ofrece un marco privado para su celebración.",
+    "exp.c3t": "Frescura del mercado", "exp.c3d": "Nuestro pescado llega del mercado diario y el pan lo horneamos nosotros — la carta cambia con las estaciones.",
+    "awd.eyebrow": "Premiado", "awd.title": "Querido por los clientes, recomendado por expertos",
+    "awd.text": "Restaurant Guru nombró a fachwerk el restaurante de pescado n.º 1 de Leverkusen y recomienda nuestros mariscos como los mejores de la ciudad. restaurant-ranglisten.de también nos incluye entre las direcciones recomendadas de la región.",
+    "awd.l1": "N.º 1 en pescado de Leverkusen — Restaurant Guru",
+    "awd.l2": "«El mejor marisco» — recomendado por Restaurant Guru",
+    "awd.l3": "Recomendación — restaurant-ranglisten.de",
+    "ct.eyebrow": "Reservas y cómo llegar", "ct.title": "Ponemos la mesa para usted",
+    "ct.resTitle": "Reservas",
+    "ct.resText": "Llámenos — encontraremos la mesa perfecta, ya sea una cena romántica o una gran celebración.",
+    "ct.hoursTitle": "Horario", "ct.closed": "Cerrado",
+    "ct.mapLoad": "Cargar mapa", "ct.route": "Cómo llegar",
+    "day.mon": "Lunes", "day.tue": "Martes", "day.wed": "Miércoles", "day.thu": "Jueves",
+    "day.fri": "Viernes", "day.sat": "Sábado", "day.sun": "Domingo", "day.holiday": "festivos",
+    "status.open": "Abierto · hasta las {t}",
+    "status.today": "Abre hoy a las {t}",
+    "status.day": "Cerrado · abre el {d} a las {t}",
+    "ft.tag": "Cultura gastronómica mediterránea en una histórica casa de entramado — en el corazón de Bergisch Neukirchen.",
+    "ft.nav": "Navegación", "ft.contact": "Contacto", "ft.hours": "Horario",
+    "ft.h1": "Mar – Sáb", "ft.h2": "Mié hasta", "ft.fine": "Cocinado con ♥ — y creado con ♥."
+  },
+
+  /* ────────────────────────── HRVATSKI ──────────────────────── */
+  hr: {
+    "meta.title": "fachwerk · Restaurant Bergisch Neukirchen — Mediteranska kuhinja u Leverkusenu",
+    "meta.desc": "Mediteranska gastronomija u povijesnoj kući kanatne gradnje: svježa riba, Black Angus odresci, tapas i hrvatski specijaliteti u Leverkusenu.",
+    "pl.sub": "Restoran · Bergisch Neukirchen",
+    "a11y.skip": "Preskoči na sadržaj",
+    "brand.tag": "Restoran · od 2015.",
+    "nav.story": "O nama", "nav.signature": "Klasici", "nav.menu": "Jelovnik",
+    "nav.experience": "Doživljaj", "nav.contact": "Kontakt", "nav.reserve": "Rezerviraj",
+    "hero.eyebrow": "Restoran · Bergisch Neukirchen · Leverkusen",
+    "hero.script": "Kultura užitka od 2015.",
+    "hero.lead": "Mediteranska kuhinja, svježa riba i Black Angus odresci — posluženi u srcu povijesne kuće kanatne gradnje.",
+    "hero.cta1": "Rezervirajte stol", "hero.cta2": "Otkrijte jelovnik",
+    "hero.award": "Br. 1 riblji restoran u Leverkusenu", "hero.scroll": "Otkrijte",
+    "hero.rotator": ["Svježa riba s tržnice", "Black Angus odresci", "Tapas i antipasti", "Buzara na hrvatski način", "Domaći kruh", "Vrhunska vina"],
+    "marquee": ["Antipasti", "Tapas", "Svježa riba", "Steakhouse", "Buzara", "Vina", "Dolci", "Terasa"],
+    "story.badge": "Kvaliteta od", "story.eyebrow": "Dobro došli u fachwerk",
+    "story.title": "Gdje se bergische grede susreću s Mediteranom",
+    "story.lead": "Iza stoljetnih greda spajamo njemačku toplinu doma s mediteranskom radošću života — uz prirodni kamen, svjetlost svijeća i miris svježeg začinskog bilja.",
+    "story.p1": "Od 2015. goste dočekujemo u obiteljskoj atmosferi. Šefica kuhinje Tajana Jurić i njezin tim osobno pripremaju svako jelo — sa svježom ribom s dnevne tržnice, vrhunskom Black Angus govedinom te regionalnim i mediteranskim povrćem od dobavljača vrhunske gastronomije.",
+    "story.f1t": "Svježe ulovljena riba", "story.f1d": "svaki dan s tržnice, s roštilja — cijela ili filet",
+    "story.f2t": "Black Angus odresci", "story.f2d": "pečeni točno po želji, od ramsteka do chateaubrianda",
+    "story.f3t": "Tapas i antipasti", "story.f3d": "španjolske i talijanske delicije za dijeljenje",
+    "story.f4t": "Vrhunska vina", "story.f4d": "iz Njemačke, Italije, Francuske, Španjolske i Hrvatske",
+    "count.c1": "Vaši domaćini od", "count.c2": "Jela i vina", "count.c3": "Vinske zemlje",
+    "sig.eyebrow": "Naši klasici", "sig.title": "Umijeće koje se kuša",
+    "sig.sub": "Šest jela zbog kojih se naši gosti uvijek vraćaju.",
+    "sig.c1tag": "Na hrvatski način", "sig.c1d": "Plodovi mora u rajčici, začinskom bilju i češnjaku — kao na dalmatinskoj obali.",
+    "sig.c2tag": "Steakhouse", "sig.c2d": "Mekani Black Angus file s roštilja — s maslacem od začinskog bilja ili umakom od tartufa.",
+    "sig.c3tag": "S roštilja", "sig.c3t": "File lososa s roštilja", "sig.c3d": "Svježi losos na listovima špinata, s limunom i finim biljnim uljem.",
+    "sig.c4tag": "Antipasti", "sig.c4t": "Carpaccio i vitello", "sig.c4d": "Tanko rezani klasici — od goveđeg filea, tune ili u duetu s vitellom tonnatom.",
+    "sig.c5tag": "Vegetarijansko", "sig.c5t": "Mediteransko povrće s roštilja", "sig.c5d": "Povrće sazrelo na suncu, s kozjim sirom, maslinovim uljem i svježim biljem.",
+    "sig.c6tag": "Dolce vita", "sig.c6t": "Domaći tiramisu", "sig.c6d": "Po obiteljskom receptu — savršen završetak večeri.",
+    "chef.quote": "„Svaki tanjur koji izađe iz naše kuhinje prolazi kroz moje ruke. Kuhanje je za mene gostoprimstvo — osjeti se kad je kuhano s ljubavlju.“",
+    "chef.role": "Šefica kuhinje i domaćica",
+    "menu.eyebrow": "La Carta", "menu.title": "Jelovnik",
+    "menu.sub": "Od antipasta do digestiva — sve svježe, sve domaće.",
+    "menu.search": "Pretražite jela …", "menu.veg": "vegetarijansko", "menu.vegan": "vegansko", "menu.genuss": "fachwerk specijalitet",
+    "menu.note": "Sve cijene u eurima s PDV-om. Vrijedi aktualni jelovnik u restoranu — moguće su izmjene. O alergenima i aditivima rado ćemo vas osobno informirati.",
+    "menu.empty": "Nije pronađeno nijedno jelo — pokušajte s drugim pojmom.",
+    "menu.pp": "po osobi", "menu.for2": "za 2", "menu.forN": "za {n}",
+    "exp.eyebrow": "Više od večere", "exp.title": "fachwerk doživljaj",
+    "exp.c1t": "Terasa u unutarnjem dvorištu", "exp.c1d": "Tople ljetne večeri među povijesnim zidovima — uz čašu vina pod vedrim nebom.",
+    "exp.c2t": "Proslave na galeriji", "exp.c2d": "Rođendani, obiteljska slavlja, poslovne večere: naša galerija pruža privatni prostor za vašu proslavu.",
+    "exp.c3t": "Svježe s tržnice", "exp.c3d": "Riba nam stiže s dnevne tržnice, kruh pečemo sami — sezonska ponuda mijenja se s kalendarom.",
+    "awd.eyebrow": "Nagrađivani", "awd.title": "Gosti nas vole, znalci nas preporučuju",
+    "awd.text": "Restaurant Guru proglasio je fachwerk ribljim restoranom br. 1 u Leverkusenu i preporučuje naše plodove mora kao najbolje u gradu. I restaurant-ranglisten.de svrstava nas među preporučene adrese regije.",
+    "awd.l1": "Br. 1 riblji restoran u Leverkusenu — Restaurant Guru",
+    "awd.l2": "„Najbolji plodovi mora“ — preporuka Restaurant Gurua",
+    "awd.l3": "Preporuka — restaurant-ranglisten.de",
+    "ct.eyebrow": "Rezervacije i dolazak", "ct.title": "Postavljamo stol za vas",
+    "ct.resTitle": "Rezervacije",
+    "ct.resText": "Nazovite nas — pronaći ćemo pravi stol, bilo za romantičnu večeru ili veliko slavlje.",
+    "ct.hoursTitle": "Radno vrijeme", "ct.closed": "Zatvoreno",
+    "ct.mapLoad": "Učitaj kartu", "ct.route": "Upute za dolazak",
+    "day.mon": "Ponedjeljak", "day.tue": "Utorak", "day.wed": "Srijeda", "day.thu": "Četvrtak",
+    "day.fri": "Petak", "day.sat": "Subota", "day.sun": "Nedjelja", "day.holiday": "blagdani",
+    "status.open": "Otvoreno · do {t}",
+    "status.today": "Otvara se danas u {t}",
+    "status.day": "Zatvoreno · otvara se u {d} u {t}",
+    "ft.tag": "Mediteranska gastronomija u povijesnoj kanatnoj kući — u srcu Bergisch Neukirchena.",
+    "ft.nav": "Navigacija", "ft.contact": "Kontakt", "ft.hours": "Radno vrijeme",
+    "ft.h1": "Uto – Sub", "ft.h2": "Sri do", "ft.fine": "Kuhano s ♥ — i izrađeno s ♥."
+  },
+
+  /* ─────────────────────── LËTZEBUERGESCH ───────────────────── */
+  lb: {
+    "meta.title": "fachwerk · Restaurant Bergisch Neukirchen — Mediterran Kichen zu Leverkusen",
+    "meta.desc": "Mediterran Genosskultur an engem historesche Fachwierkhaus: frësche Fësch, Black-Angus-Steaken, Tapas & kroatesch Spezialitéiten zu Leverkusen.",
+    "pl.sub": "Restaurant · Bergisch Neukirchen",
+    "a11y.skip": "Zum Inhalt sprangen",
+    "brand.tag": "Restaurant · zënter 2015",
+    "nav.story": "Iwwer eis", "nav.signature": "Klassiker", "nav.menu": "Menuskaart",
+    "nav.experience": "Erliefnes", "nav.contact": "Kontakt", "nav.reserve": "Reservéieren",
+    "hero.eyebrow": "Restaurant · Bergisch Neukirchen · Leverkusen",
+    "hero.script": "Genosskultur zënter 2015",
+    "hero.lead": "Mediterran Kichen, frësche Fësch & Black-Angus-Steaken — zerwéiert am Häerz vun engem historesche Fachwierkhaus.",
+    "hero.cta1": "Dësch reservéieren", "hero.cta2": "Menuskaart entdecken",
+    "hero.award": "Nr. 1 Fëschrestaurant zu Leverkusen", "hero.scroll": "Entdecken",
+    "hero.rotator": ["Frësche Fësch vum Maart", "Black-Angus-Steaken", "Tapas & Antipasti", "Kroatesch Buzara", "Hausgebakent Brout", "Erliese Wäiner"],
+    "marquee": ["Antipasti", "Tapas", "Frësche Fësch", "Steakhouse", "Buzara", "Wäiner", "Dolci", "Terrasse"],
+    "story.badge": "Qualitéit zënter", "story.eyebrow": "Wëllkomm am fachwerk",
+    "story.title": "Wou bergescht Fachwierk op d'Mëttelmier trëfft",
+    "story.lead": "Hannert honnertjärege Balken verbanne mir bergesch Gemittlechkeet mat mediterraner Liewensfreed — Natursteen, Käerzeliicht an den Doft vu frësche Kraider abegraff.",
+    "story.p1": "Zënter 2015 empfänke mir eis Gäscht an enger familiärer Atmosphär. Chefkächin Tajana Jurić an hiert Team preparéieren all Plat perséinlech — mat frëschem Fësch vum deegleche Maart, éischtklassegem Black-Angus-Rëndfleesch a regionalem a mediterranem Geméis vu Liwweranten aus der Spëtzegastronomie.",
+    "story.f1t": "Fangfrësche Fësch", "story.f1d": "all Dag vum Maart, ganz oder als Filet gegrillt",
+    "story.f2t": "Black-Angus-Steaken", "story.f2d": "op de Punkt gegrillt, vum Hüftsteak bis zum Chateaubriand",
+    "story.f3t": "Tapas & Antipasti", "story.f3d": "spuenesch an italienesch Delikatessen fir ze deelen",
+    "story.f4t": "Erliese Wäiner", "story.f4d": "aus Däitschland, Italien, Frankräich, Spuenien & Kroatien",
+    "count.c1": "Är Gastgeber zënter", "count.c2": "Platen & Wäiner", "count.c3": "Wäilänner",
+    "sig.eyebrow": "Eis Klassiker", "sig.title": "Handwierk, dat ee schmaacht",
+    "sig.sub": "Sechs Platen, fir déi eis Gäscht ëmmer erëmkommen.",
+    "sig.c1tag": "Kroatesch Aart", "sig.c1d": "Miersfriichten an Tomaten, Kraider & Knuewelek — wéi op der dalmatinescher Küst.",
+    "sig.c2tag": "Steakhouse", "sig.c2d": "Zaart Black-Angus-Filet, op de Punkt gegrillt — mat Kraiderbotter oder Trüffelzooss.",
+    "sig.c3tag": "Vum Grill", "sig.c3t": "Lachsfilet vum Grill", "sig.c3d": "Fangfrësche Lachs op Blatspinat, mat Zitroun a fengem Kraiderueleg.",
+    "sig.c4tag": "Antipasti", "sig.c4t": "Carpaccio & Vitello", "sig.c4d": "Hauchdënn Klassiker — vum Rëndfilet, Thon oder als Duett mam Vitello Tonnato.",
+    "sig.c5tag": "Vegetaresch", "sig.c5t": "Mediterrant Grillgeméis", "sig.c5d": "Sonnegeräift Geméis mat Geessekéis, Olivenueleg a frësche Kraider.",
+    "sig.c6tag": "Dolce Vita", "sig.c6t": "Tiramisu vun der Casa", "sig.c6d": "Hausgemaach nom Familljerezept — de perfekten Ofschloss vun engem Owend.",
+    "chef.quote": "„All Teller, deen eis Kichen verléisst, geet duerch meng Hänn. Kachen ass fir mech Gaaschtfrëndschaft — ee schmaacht, ob mat Léift gekacht gouf.“",
+    "chef.role": "Chefkächin & Gastgeberin",
+    "menu.eyebrow": "La Carta", "menu.title": "D'Menuskaart",
+    "menu.sub": "Vum Antipasto bis zum Digestif — alles frësch, alles hausgemaach.",
+    "menu.search": "E Plat sichen …", "menu.veg": "vegetaresch", "menu.vegan": "vegan", "menu.genuss": "fachwerk-Genoss",
+    "menu.note": "All Präisser an Euro inkl. TVA. Et gëllt déi aktuell Kaart am Restaurant — Ännerunge virbehalen. Iwwer Allergener & Zousazstoffer informéiere mir Iech gär perséinlech.",
+    "menu.empty": "Kee Plat fonnt — probéiert e anere Sichbegrëff.",
+    "menu.pp": "p. P.", "menu.for2": "fir 2", "menu.forN": "fir {n}",
+    "exp.eyebrow": "Méi wéi en Iessen", "exp.title": "D'fachwerk-Erliefnes",
+    "exp.c1t": "Bannenhaff-Terrasse", "exp.c1d": "Lau Summerowender tëschent historesche Maueren — mat engem Glas Wäin ënner fräiem Himmel.",
+    "exp.c2t": "Feiere op der Empore", "exp.c2d": "Gebuertsdeeg, Familljefester, Firmeniessen: Eis Empore bitt de private Kader fir Är Feier.",
+    "exp.c3t": "Frëscht vum Maart", "exp.c3d": "Eise Fësch kënnt vum deegleche Maart, Brout baake mir selwer — Saisonales wiesselt mam Kalenner.",
+    "awd.eyebrow": "Ausgezeechent", "awd.title": "Vu Gäscht gär gesinn, vu Kenner empfohlen",
+    "awd.text": "Restaurant Guru huet d'fachwerk zum Nr.-1-Fëschrestaurant zu Leverkusen gekiert an empfeelt eis Miersfriichten als déi bescht vun der Stad. Och restaurant-ranglisten.de féiert eis ënner den empfohlenen Adresse vun der Regioun.",
+    "awd.l1": "Nr. 1 Fëschrestaurant zu Leverkusen — Restaurant Guru",
+    "awd.l2": "„Déi bescht Miersfriichten“ — empfohle vu Restaurant Guru",
+    "awd.l3": "Empfehlung — restaurant-ranglisten.de",
+    "ct.eyebrow": "Reservatioun & Uweeën", "ct.title": "Mir decken den Dësch fir Iech",
+    "ct.resTitle": "Reservatioun",
+    "ct.resText": "Rufft eis un — mir fannen dee passenden Dësch, ob romantescht Dinner oder grouss Tafel.",
+    "ct.hoursTitle": "Ëffnungszäiten", "ct.closed": "Roudag",
+    "ct.mapLoad": "Kaart lueden", "ct.route": "Wee plangen",
+    "day.mon": "Méindeg", "day.tue": "Dënschdeg", "day.wed": "Mëttwoch", "day.thu": "Donneschdeg",
+    "day.fri": "Freideg", "day.sat": "Samschdeg", "day.sun": "Sonndeg", "day.holiday": "Feierdeeg",
+    "status.open": "Elo op · bis {t}",
+    "status.today": "Mécht haut um {t} op",
+    "status.day": "Zou · mécht {d} um {t} op",
+    "ft.tag": "Mediterran Genosskultur am historesche Fachwierkhaus — matzen zu Bergisch Neukirchen.",
+    "ft.nav": "Navigatioun", "ft.contact": "Kontakt", "ft.hours": "Ëffnungszäiten",
+    "ft.h1": "Dë – Sa", "ft.h2": "Më bis", "ft.fine": "Mat ♥ gekacht — a mat ♥ gebaut."
+  }
+};
+
+/* ── engine ──────────────────────────────────────────────────── */
+const FW_LANGS = ["de", "en", "fr", "es", "hr", "lb"];
+
+function fwDetectLang() {
+  const saved = localStorage.getItem("fw-lang");
+  if (saved && FW_LANGS.includes(saved)) return saved;
+  const nav = (navigator.language || "de").slice(0, 2).toLowerCase();
+  return FW_LANGS.includes(nav) ? nav : "de";
+}
+
+let FW_LANG = fwDetectLang();
+
+function t(key) {
+  const pack = I18N[FW_LANG] || I18N.de;
+  const v = pack[key] !== undefined ? pack[key] : I18N.de[key];
+  return v !== undefined ? v : key;
+}
+
+function fwApplyLang(lang) {
+  if (!FW_LANGS.includes(lang)) lang = "de";
+  FW_LANG = lang;
+  localStorage.setItem("fw-lang", lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dataset.lang = lang;
+
+  document.title = t("meta.title");
+  const md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute("content", t("meta.desc"));
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const val = t(el.dataset.i18n);
+    if (typeof val === "string") el.innerHTML = val;
+  });
+  document.querySelectorAll("[data-i18n-attr]").forEach(el => {
+    el.dataset.i18nAttr.split(";").forEach(pair => {
+      const [attr, key] = pair.split(":");
+      if (attr && key) el.setAttribute(attr.trim(), t(key.trim()));
+    });
+  });
+
+  /* language switcher state */
+  const cur = document.getElementById("langCurrent");
+  if (cur) cur.textContent = lang.toUpperCase();
+  document.querySelectorAll("#langList li").forEach(li => {
+    li.setAttribute("aria-selected", li.dataset.lang === lang ? "true" : "false");
+  });
+
+  /* dependent modules re-render */
+  if (window.fwRenderMarquee) window.fwRenderMarquee();
+  if (window.fwRenderMenu) window.fwRenderMenu();
+  if (window.fwUpdateOpenStatus) window.fwUpdateOpenStatus();
+  if (window.fwResetRotator) window.fwResetRotator();
+
+  document.dispatchEvent(new CustomEvent("fw:langchange", { detail: { lang } }));
+}
+
+window.t = t;
+window.fwApplyLang = fwApplyLang;
+window.fwGetLang = () => FW_LANG;
