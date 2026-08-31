@@ -5,5 +5,11 @@
   "description": "Backend de synchronisation du defi pompes & tractions (Netlify Functions + Blobs)",
   "dependencies": {
     "@netlify/blobs": "^8.1.0"
+  },
+  "scripts": {
+    "build:drop": "node build-drop.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

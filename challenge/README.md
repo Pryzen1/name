@@ -47,11 +47,29 @@ Chacun ouvre le lien, choisit son prénom, et c'est parti. Dès que quelqu'un sa
 chose, les autres le voient **en 2 à 3 secondes**, sans rien recharger : le classement se
 réordonne, les anneaux bougent, le total du groupe monte.
 
-### Sans synchronisation (glisser-déposer)
+### En glisser-déposer
 
-Tu peux déposer le dossier `challenge/` directement sur Netlify. Le site marche, mais **sans
-partage** : chacun n'aura que ses propres données, sur son propre téléphone. La pastille en haut
-à droite affiche alors « Local ».
+Un déploiement manuel ne lance aucune installation : si tu déposes le dossier `challenge/` tel
+quel, la fonction serveur ne démarrera pas (sa dépendance manque) et chacun restera sur ses
+propres données — la pastille affichera « Local ».
+
+Pour un glisser-déposer qui synchronise quand même, il faut un paquet où la dépendance est
+déjà intégrée à la fonction :
+
+```bash
+npm install
+npm run build:drop      # produit dist-drop/ et defi-netlify.zip
+```
+
+Dépose ensuite `defi-netlify.zip` (ou le dossier `dist-drop/`) sur
+[app.netlify.com/drop](https://app.netlify.com/drop).
+
+Vérifie après coup que la pastille en haut à droite affiche **« Synchro »** et non « Local » :
+c'est le seul moyen de savoir si la fonction a bien été prise en compte. Si elle affiche
+« Local », passe par l'import Git ci-dessus.
+
+À savoir : en glisser-déposer, chaque mise à jour demande de refaire le paquet et de le
+redéposer. L'import Git, lui, redéploie tout seul à chaque commit.
 
 ### Sur le téléphone
 

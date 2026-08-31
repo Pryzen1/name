@@ -124,6 +124,10 @@ function version(state) {
 export default async (request) => {
   const cors = corsHeaders(request);
   if (request.method === 'OPTIONS') return json(204, null, cors);
+  // Contrôle de la méthode AVANT d'ouvrir le store : une méthode inconnue mérite
+  // un 405, pas un 503 « service indisponible ».
+  if (request.method !== 'GET' && request.method !== 'POST')
+    return json(405, { error: 'methode-non-autorisee' }, cors);
 
   const url = new URL(request.url);
   const room = cleanRoom(url.searchParams.get('room'));
@@ -149,8 +153,6 @@ export default async (request) => {
     if (request.headers.get('if-none-match') === etag) return json(304, null, { etag, ...cors });
     return json(200, { state, version: etag, room }, { etag, ...cors });
   }
-
-  if (request.method !== 'POST') return json(405, { error: 'methode-non-autorisee' }, cors);
 
   const raw = await request.text();
   if (raw.length > MAX_BODY) return json(413, { error: 'charge-trop-grosse' }, cors);
