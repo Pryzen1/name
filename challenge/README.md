@@ -10,7 +10,10 @@ pendant 30 jours. Chacun a ses objectifs, tout le monde voit où en sont les aut
 | Ethan | 250 | 175 | 6 375 |
 | **À trois** | | | **31 500** |
 
-Jour 1 = pompes, jour 2 = tractions, jour 3 = pompes… jusqu'au jour 30.
+**Départ le 1er septembre 2026.** Jour 1 = pompes, jour 2 = tractions, jour 3 = pompes…
+et ainsi de suite jusqu'au jour 30. Chaque jour, tout le monde fait le même exercice,
+chacun avec son propre objectif. La date est modifiable dans les réglages et le changement
+est partagé avec les trois.
 
 ## Ce qu'il y a dedans
 
@@ -19,6 +22,11 @@ Jour 1 = pompes, jour 2 = tractions, jour 3 = pompes… jusqu'au jour 30.
 - **Chrono EMOM** — une série au début de chaque minute. Tu choisis combien de répétitions par
   minute, il calcule le nombre de séries, bipe à chaque minute, décompte les 3 dernières
   secondes, garde l'écran allumé et s'arrête tout seul à l'objectif.
+  La minute tourne en continu : si tu mets 15 secondes à faire tes répétitions, il te reste
+  45 secondes de repos. Le bouton **« Série faite »** valide la série immédiatement — pour que
+  les autres la voient — mais n'écourte pas le repos ; il devient **« Passer le repos »** si tu
+  veux quand même enchaîner. Tu n'es obligé d'appuyer sur rien : sans aucun geste, le chrono
+  valide chaque série à la fin de sa minute.
 - **Calendrier 30 jours** — une case par jour, remplie au pourcentage, avec les trois barres
   de couleur pour comparer. On peut corriger ou rattraper n'importe quel jour.
 - **Classement** — trois vues : régularité, volume, séries. Plus les statistiques perso.
@@ -35,8 +43,9 @@ Il faut un déploiement **depuis Git**, pour que la fonction serveur parte avec 
    (`publish = challenge`, `functions = netlify/functions`)
 4. Déploie, puis envoie l'URL à Raphaël et Ethan
 
-Chacun ouvre le lien, choisit son prénom, et c'est parti. Dès que quelqu'un coche quelque chose,
-les autres le voient dans les secondes qui suivent.
+Chacun ouvre le lien, choisit son prénom, et c'est parti. Dès que quelqu'un saisit quelque
+chose, les autres le voient **en 2 à 3 secondes**, sans rien recharger : le classement se
+réordonne, les anneaux bougent, le total du groupe monte.
 
 ### Sans synchronisation (glisser-déposer)
 
@@ -63,6 +72,11 @@ cochez tous les trois en même temps, les trois saisies sont conservées.
 **Ça marche sans réseau.** Une saisie hors ligne est gardée et repart toute seule au retour du
 réseau. La pastille indique ce qui est en attente.
 
+**Le rafraîchissement s'adapte.** Toutes les 2,5 s tant que quelqu'un est actif ; toutes les
+20 s après 3 minutes de calme ; complètement en veille après 15 minutes, et le moindre geste le
+réveille. Rien n'est demandé au serveur quand l'onglet est en arrière-plan. C'est ce qui permet
+de rester quasi instantané sans dépasser le quota gratuit de Netlify.
+
 **Le chrono ne triche pas.** Il ne compte pas des minutes, il lit l'heure réelle : s'il est mis en
 veille, il se recale au réveil. Et si l'écran s'est éteint pendant plusieurs minutes, il ne crédite
 rien tout seul — il demande combien de séries tu as réellement faites.
@@ -80,6 +94,7 @@ Le bouton ⚙️ en haut à droite permet de changer :
 Tout est en haut du `<script>` dans `challenge/index.html` :
 
 ```js
+const DEFAULT_START = '2026-09-01';   // le premier jour du défi
 const PEOPLE = [
   { id:'thomas',  name:'Thomas',  color:'#FF6B3D', goals:{ pushups:750, pullups:250 } },
   { id:'raphael', name:'Raphaël', color:'#5E7CFF', goals:{ pushups:500, pullups:175 } },

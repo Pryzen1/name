@@ -346,6 +346,8 @@ button{background:none;border:0;cursor:pointer;padding:0}
 .setline{font-family:"Big Shoulders Display",Archivo,sans-serif;font-size:clamp(1.5rem,7vw,2rem);
   font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--hue);line-height:1;margin-top:2px}
 .reps-now{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-top:9px}
+.session.resting .sring .p{stroke:var(--ok)}
+.session.resting .setline{color:var(--ok)}
 .session.count .sring .p{stroke:#fff}
 .session.count .secs{color:#fff;animation:pulse .32s ease-out}
 @keyframes pulse{0%{transform:scale(1.09)}100%{transform:scale(1)}}
@@ -652,7 +654,7 @@ button{background:none;border:0;cursor:pointer;padding:0}
       <button class="btn btn-ghost" id="sPause">
         <svg viewBox="0 0 24 24"><path d="M7 4v16M17 4v16"/></svg><span id="sPauseLbl">Pause</span>
       </button>
-      <button class="btn btn-ghost" id="sSkip">Série suivante</button>
+      <button class="btn btn-ghost" id="sSkip"><span id="sSkipLbl">Série faite</span></button>
       <button class="btn btn-solid wide" id="sStop">Terminer et enregistrer</button>
     </div>
   </div>
@@ -694,13 +696,19 @@ const PEOPLE = [
   { id:'ethan',   name:'Ethan',   color:'#2FD8A0', goals:{ pushups:250, pullups:175 } },
 ];
 const DAYS = 30;
+const DEFAULT_START = '2026-09-01';   // jour 1 = pompes
 const EX = {
   pushups:{ label:'Pompes',    short:'P', word:'POMPES',    warm:true  },
   pullups:{ label:'Tractions', short:'T', word:'TRACTIONS', warm:false },
 };
 const TZ = 'Europe/Paris';
 const ROLLOVER_HOUR = 4;          // une séance à 1 h du matin compte pour la veille
-const POLL_VISIBLE = 6000;        // interrogation du serveur, onglet au premier plan
+// Trois cadences, pour rester quasi instantané pendant une séance sans brûler le quota
+// gratuit de Netlify si quelqu'un laisse l'onglet ouvert toute la journée.
+const POLL_FAST = 2500;           // ça bouge : on regarde toutes les 2,5 s
+const POLL_IDLE = 20000;          // plus rien depuis 3 min : on lève le pied
+const ACTIVE_FOR = 3 * 60000;
+const SLEEP_AFTER = 15 * 60000;   // plus rien depuis 15 min : on arrête complètement
 const PROBE_RETRIES = [60000, 300000, 900000];  // re-sondage si l'API apparait plus tard
 
 const $  = (s, r) => (r || document).querySelector(s);
@@ -793,7 +801,7 @@ if (!state.entries) state = { v:1, config:{}, entries:{} };
 if (!queue.entries) queue = { entries:{}, config:{} };
 
 let endpoint = null, version = null, inFlight = false, failures = 0;
-let mode = 'local', browserOnline = true, pollTimer = null;
+let mode = 'local', browserOnline = true, pollTimer = null, lastActivity = 0;
 
 const pendingCount = () => Object.keys(queue.entries).length + Object.keys(queue.config).length;
 
@@ -807,6 +815,7 @@ function writeCell(section, key, cell) {
   saveLocal();
   renderAll();
   schedulePush();
+  bumpActivity();
 }
 const setReps = (personId, dayKey, reps) =>
   writeCell('entries', personId + '|' + dayKey,
@@ -906,18 +915,45 @@ async function probe() {
   if (probeAttempt < PROBE_RETRIES.length) setTimeout(probe, PROBE_RETRIES[probeAttempt++]);
 }
 
+// Cadence adaptative : rapide tant que ça bouge, plus lente quand tout le monde est au repos.
+// Rien n'est demandé au serveur quand l'onglet est en arrière-plan.
+function pollDelay() {
+  const quiet = Date.now() - lastActivity;
+  if (quiet > SLEEP_AFTER) return 0;              // 0 = on met en sommeil
+  return quiet < ACTIVE_FOR ? POLL_FAST : POLL_IDLE;
+}
+function schedulePoll() {
+  clearTimeout(pollTimer); pollTimer = null;
+  if (!endpoint || document.visibilityState !== 'visible') return;
+  const delay = pollDelay();
+  if (!delay) { setMode('idle'); return; }        // réveillé au moindre geste
+  if (mode === 'idle') setMode('cloud');
+  pollTimer = setTimeout(async function () {
+    if (await pull()) lastActivity = Date.now();  // un ami a saisi quelque chose
+    schedulePoll();
+  }, delay);
+}
+// Le moindre geste sur la page relance la cadence rapide.
+['pointerdown', 'keydown', 'focus'].forEach(function (ev) {
+  window.addEventListener(ev, function () {
+    if (Date.now() - lastActivity > ACTIVE_FOR) { lastActivity = Date.now(); schedulePoll(); }
+  }, { passive: true, capture: true });
+});
+// Toute action locale (la nôtre ou celle d'un ami) relance la cadence rapide.
+function bumpActivity() { lastActivity = Date.now(); schedulePoll(); }
+
 function startPolling() {
-  clearInterval(pollTimer);
-  pollTimer = setInterval(pull, POLL_VISIBLE);
+  lastActivity = Date.now();
+  schedulePoll();
   document.addEventListener('visibilitychange', function () {
-    clearInterval(pollTimer); pollTimer = null;
     if (document.visibilityState === 'visible') {
-      pollTimer = setInterval(pull, POLL_VISIBLE);
       renderAll();                    // le téléphone a pu passer minuit pendant la veille
+      lastActivity = Date.now();
       pull(); if (pendingCount()) push();
-    } else if (pendingCount()) {
-      // On part en arrière-plan : on pousse ce qui reste, puis plus aucune requête.
-      push();
+      schedulePoll();
+    } else {
+      clearTimeout(pollTimer); pollTimer = null;
+      if (pendingCount()) push();
     }
   });
 }
@@ -929,19 +965,9 @@ window.addEventListener('offline', function () { browserOnline = false; setMode(
    ========================================================================== */
 const exerciseForIndex = (i) => (i % 2 === 0 ? 'pushups' : 'pullups');
 const goalFor = (person, i) => person.goals[exerciseForIndex(i)];
-function startKey() {
-  const explicit = getConf('start', null);
-  if (explicit) return explicit;
-  // Aucune date choisie : on prend la plus ancienne journée saisie par n'importe qui,
-  // sinon aujourd'hui. Rien n'est écrit, donc trois appareils ne peuvent pas se contredire.
-  let min = null;
-  for (const k in state.entries) {
-    if ((state.entries[k].reps || 0) <= 0) continue;
-    const d = k.slice(k.indexOf('|') + 1);
-    if (!min || d < min) min = d;
-  }
-  return min || todayKey();
-}
+// Date de départ commune, en dur : les trois appareils sont d'accord sans rien écrire.
+// Elle reste modifiable dans les réglages, et ce choix-là est partagé.
+const startKey = () => getConf('start', DEFAULT_START);
 const dayKeyOf = (i) => shiftKey(startKey(), i);
 const indexOfToday = () => daysBetween(startKey(), todayKey());
 
@@ -1013,16 +1039,18 @@ function renderSync() {
   const pend = pendingCount();
   let m = mode, text = 'Local';
   if (inFlight) m = 'syncing';
-  if (mode === 'cloud') text = pend ? 'Envoi…' : 'Synchro';
+  if (mode === 'idle') { m = 'cloud'; text = 'En veille'; }
+  else if (mode === 'cloud') text = pend ? 'Envoi…' : 'Synchro';
   else if (mode === 'offline') text = pend ? pend + ' en attente' : 'Hors ligne';
   else text = 'Local';
   pill.dataset.mode = m; lbl.textContent = text;
-  pill.title = mode === 'cloud' ? 'Tout est partagé avec Raphaël et Ethan'
+  pill.title = mode === 'idle' ? 'Rien de neuf depuis un moment — touche l’écran pour relancer'
+    : mode === 'cloud' ? 'Tout est partagé avec Raphaël et Ethan'
     : mode === 'offline' ? 'Pas de réseau — tout est gardé et partira tout seul'
     : 'Mode local : les données restent sur cet appareil';
   const help = $('#setSyncHelp');
   if (help) {
-    help.innerHTML = mode === 'cloud'
+    help.innerHTML = (mode === 'cloud' || mode === 'idle')
       ? 'Connectée. Salon <code>' + room + '</code> — tout ce que vous cochez est partagé en direct.'
       : mode === 'offline'
       ? 'Réseau indisponible. ' + pend + ' modification(s) en attente, elles partiront toutes seules.'
@@ -1502,9 +1530,19 @@ function computeEmom(s, now) {
 function seekToSet(n) {
   sess.startedAt = Date.now() - sess.pausedMs - n * MIN;
   sess.pausedAt = null;
+  sess.marked = n;
   lastSetIndex = -1; scheduledUpTo = -1; clearScheduled();
   saveSession();
 }
+
+// Une série peut être validée AVANT la fin de la minute (bouton « Série faite ») :
+// le total retenu est le plus avancé des deux, le repos continue de tourner.
+function totalFor(s, st) {
+  const remaining = Math.max(0, s.goal - s.from);
+  const sets = Math.min(st.totalSets, Math.max(st.banked, s.marked || 0));
+  return clamp(s.from + Math.min(remaining, sets * s.per), 0, 100000);
+}
+const isResting = (st) => !st.done && (sess.marked || 0) > st.setIndex;
 
 function saveSession() { if (sess.active) ls.set(SESS_KEY, sess); else ls.del(SESS_KEY); }
 
@@ -1532,7 +1570,7 @@ function startSession() {
 
   anchorAudio(); keepAudioAlive(true);      // dans le geste utilisateur : indispensable sur iOS
   sess = { active:true, personId:p.id, dayIndex:idx, exKey:exKey, goal:goal, from:from, per:per,
-           startedAt: Date.now(), pausedMs:0, pausedAt:null };
+           startedAt: Date.now(), pausedMs:0, pausedAt:null, marked:0 };
   lastSetIndex = -1; lastTickSec = -1; scheduledUpTo = -1; gapPending = null;
   clearScheduled(); saveSession();
   $('#sessWho').textContent = p.name + ' · ' + EX[exKey].label;
@@ -1550,7 +1588,7 @@ function endSession(save) {
   stopLoop(); clearScheduled(); keepAudioAlive(false); keepAwake(false);
   if (save && sess.active) {
     const st = computeEmom(sess, Date.now());
-    const total = clamp(sess.from + st.bankedReps, 0, 100000);
+    const total = totalFor(sess, st);
     if (total > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
       setReps(sess.personId, dayKeyOf(sess.dayIndex), total);
   }
@@ -1616,7 +1654,7 @@ function resolveGap(n) {
   gapPending = null;
   seekToSet(target);
   $('#gap').classList.remove('on');
-  const banked = sess.from + computeEmom(sess, Date.now()).bankedReps;
+  const banked = totalFor(sess, computeEmom(sess, Date.now()));
   if (banked > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
     setReps(sess.personId, dayKeyOf(sess.dayIndex), banked);
   anchorAudio(); saveSession(); startLoop();
@@ -1625,12 +1663,19 @@ function resolveGap(n) {
 function paintSession() {
   const now = Date.now(), st = computeEmom(sess, now);
   const C1 = 2 * Math.PI * 132, C2 = 2 * Math.PI * 118;
-  const totalReps = sess.from + st.bankedReps;
+  const totalReps = totalFor(sess, st);
+  const resting = isResting(st);
   const pct = sess.goal ? clamp((totalReps / sess.goal) * 100, 0, 100) : 0;
 
   $('#sSecs').textContent = sess.pausedAt ? '❚❚' : st.secsLeft;
-  $('#sSet').textContent = 'Série ' + (st.setIndex + 1) + ' / ' + st.totalSets;
-  $('#sReps').textContent = fmt(totalReps) + ' / ' + fmt(sess.goal) + ' répétitions';
+  $('#sSet').textContent = resting
+    ? 'Repos · série ' + (st.setIndex + 2) + ' ensuite'
+    : 'Série ' + (st.setIndex + 1) + ' / ' + st.totalSets;
+  $('#sReps').textContent = resting
+    ? fmt(totalReps) + ' / ' + fmt(sess.goal) + ' · récupère'
+    : fmt(st.repsThisSet) + ' répétitions à faire · ' + fmt(totalReps) + ' / ' + fmt(sess.goal);
+  $('#session').classList.toggle('resting', resting && !sess.pausedAt);
+  $('#sSkipLbl').textContent = resting ? 'Passer le repos' : 'Série faite';
   $('#sBanked').textContent = fmt(totalReps);
   $('#sPct').textContent = Math.round(pct) + ' %';
   const rm = Math.max(0, st.remainingMs);
@@ -1667,7 +1712,7 @@ function tick() {
   if (st.setIndex !== prevIndex) {
     if (prevIndex >= 0) {
       if (gap <= GAP_MS) { beep([880, 1320], 0.15, 0.11); buzz([20, 50, 20]); }
-      const banked = sess.from + st.bankedReps;
+      const banked = totalFor(sess, st);
       if (banked > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
         setReps(sess.personId, dayKeyOf(sess.dayIndex), banked);
     }
@@ -1715,8 +1760,18 @@ $('#sPause').addEventListener('click', function () {
 $('#sSkip').addEventListener('click', function () {
   if (!sess.active || sess.pausedAt || gapPending) return;
   const st = computeEmom(sess, Date.now());
-  sess.startedAt -= st.msToNext;          // la minute en cours est considérée comme faite
-  scheduledUpTo = -1; clearScheduled();
+  if (isResting(st)) {
+    // Déjà validée : ce bouton écourte le repos et enchaîne tout de suite.
+    sess.startedAt -= st.msToNext;
+    scheduledUpTo = -1; clearScheduled();
+  } else {
+    // Série finie : on la valide immédiatement — le repos, lui, continue de tourner
+    // jusqu'à la fin de la minute. C'est tout l'intérêt de l'EMOM.
+    sess.marked = st.setIndex + 1;
+    const tot = totalFor(sess, st);
+    if (tot > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
+      setReps(sess.personId, dayKeyOf(sess.dayIndex), tot);
+  }
   saveSession(); buzz(12);
   if (!rafId && !tickId) startLoop(); else tick();
 });
@@ -1764,7 +1819,7 @@ function boot() {
   if (saved && saved.active && me && saved.personId === me) {
     const st = computeEmom(saved, Date.now());
     if (st.done) {
-      const total = clamp(saved.from + st.bankedReps, 0, 100000);
+      const total = totalFor(saved, st);
       if (total > getReps(saved.personId, dayKeyOf(saved.dayIndex)))
         setReps(saved.personId, dayKeyOf(saved.dayIndex), total);
       ls.del(SESS_KEY);
