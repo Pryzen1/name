@@ -328,6 +328,17 @@ button{background:none;border:0;cursor:pointer;padding:0}
   font-size:13px;font-weight:700;transition:.16s}
 .chips button[aria-pressed=true]{background:var(--hue);color:var(--ink-950);border-color:transparent}
 
+.who-pick{height:64px;justify-content:flex-start;padding:0 15px;gap:12px;text-align:left}
+.who-pick > i{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.who-pick > span{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.who-pick b{font-size:16px;font-weight:750;line-height:1.2}
+.who-pick > span > span{font-size:12px;color:var(--text-3);font-weight:600}
+.who-pick[data-last]{border-color:color-mix(in oklab,var(--c) 50%,transparent);
+  background:color-mix(in oklab,var(--c) 9%,var(--surface))}
+.who-pick em{font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-950);background:var(--ok);padding:3px 7px;border-radius:99px;flex:none}
+.who-pick[data-last] .lastlbl{color:var(--c)}
+
 /* ---- Mode séance : chrono plein écran ----------------------------------- */
 .session{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;
   background:var(--ink-950);padding:calc(var(--safe-t) + 14px) var(--pad) calc(16px + var(--safe-b))}
@@ -1012,7 +1023,9 @@ let currentView = 'today';
 let rankMode = 'reg';
 let sheetDayIndex = 0;
 
-const meP = () => (me ? personById(me) : PEOPLE[0]);
+// `me` vaut null tant que personne n'a été choisi : on affiche alors le dernier
+// prénom connu, uniquement pour le rendu. Aucune écriture n'est possible dans cet état.
+const meP = () => personById(me || ls.get('defi:me', null) || PEOPLE[0].id);
 
 /* ============================================================================
    7. RENDU
@@ -1257,7 +1270,7 @@ function updateRepsHelp() {
 }
 
 function renderAll() {
-  if (!me) return;
+  if (whoRefresh) whoRefresh();
   renderWho(); renderToday(); renderCal(); renderRank(); renderChrono(); renderSync();
 }
 
@@ -1299,6 +1312,7 @@ $('#who').addEventListener('click', function (e) {
 /* --- Ajout rapide + validation --- */
 let lastPct = 0;
 function applyReps(value, ghost) {
+  if (!me) return;                       // identité pas encore confirmée
   const p = meP(), ti = indexOfToday();
   if (ti < 0 || ti >= DAYS) { toast('Le défi n’est pas en cours aujourd’hui.'); return; }
   const idx = clamp(ti, 0, DAYS - 1), goal = goalFor(p, idx);
@@ -1358,6 +1372,7 @@ $('#sdChips').addEventListener('click', function (e) {
 $('#sdMinus').addEventListener('click', () => { $('#sdInput').value = Math.max(0, (+$('#sdInput').value || 0) - 10); });
 $('#sdPlus').addEventListener('click', () => { $('#sdInput').value = (+$('#sdInput').value || 0) + 10; });
 $('#sdSave').addEventListener('click', function () {
+  if (!me) return;
   const p = meP(), i = sheetDayIndex, goal = goalFor(p, i);
   const before = getReps(p.id, dayKeyOf(i));
   const val = clamp(+$('#sdInput').value || 0, 0, 100000);
@@ -1376,6 +1391,7 @@ $('#btnSettings').addEventListener('click', function () {
   openSheet('#sheetSet');
 });
 $('#setSave').addEventListener('click', function () {
+  if (!me) return;
   const d = $('#setStart').value;
   if (d && /^\d{4}-\d{2}-\d{2}$/.test(d) && d !== startKey()) {
     const shift = daysBetween(startKey(), d);
@@ -1561,6 +1577,7 @@ function scheduleBeeps(st) {
 }
 
 function startSession() {
+  if (!me) return;
   const p = meP(), ti = indexOfToday();
   if (ti < 0 || ti >= DAYS) { toast('Le défi n’est pas en cours aujourd’hui.'); return; }
   const idx = clamp(ti, 0, DAYS - 1), exKey = exerciseForIndex(idx), goal = goalFor(p, idx);
@@ -1787,34 +1804,64 @@ $('#gapSave').addEventListener('click', function () { resolveGap(+$('#gapInput')
 /* ============================================================================
    11. DÉMARRAGE
    ========================================================================== */
-function chooseWho() {
+// Demandé à CHAQUE arrivée sur le site : sans ça, on saisit sous le prénom de
+// quelqu'un d'autre sans s'en rendre compte. Le dernier choix est mis en avant,
+// donc c'est un seul appui.
+let whoRefresh = null;
+function chooseWho(done) {
+  const last = ls.get('defi:me', null);
   const el = document.createElement('div');
   el.className = 'sheet on'; el.id = 'sheetWho';
   el.innerHTML = '<div class="scrim"></div><div class="panel"><div class="grab"></div>' +
-    '<h2>Qui es-tu&nbsp;?</h2><div class="sub">Pour savoir quels objectifs afficher.</div>' +
-    '<div style="display:grid;gap:8px">' +
-    PEOPLE.map(function (p) {
-      const g = 'Pompes ' + fmt(p.goals.pushups) + ' · Tractions ' + fmt(p.goals.pullups);
-      return '<button class="btn btn-ghost" data-pick="' + p.id + '" style="height:62px;justify-content:flex-start;padding:0 16px;gap:12px">' +
-        '<i style="width:10px;height:10px;border-radius:50%;background:' + p.color + ';flex:none"></i>' +
-        '<span style="text-align:left"><b style="display:block;font-size:16px">' + p.name + '</b>' +
-        '<span style="font-size:12px;color:var(--text-3);font-weight:600">' + g + '</span></span></button>';
-    }).join('') + '</div></div>';
+    '<h2>Qui es-tu&nbsp;?</h2><div class="sub" id="whoSub"></div>' +
+    '<div style="display:grid;gap:8px" id="whoList"></div></div>';
   document.body.appendChild(el);
   document.body.style.overflow = 'hidden';
+
+  function paint() {
+    const ti = indexOfToday();
+    const started = ti >= 0 && ti < DAYS;
+    const idx = clamp(ti, 0, DAYS - 1);
+    const ex = EX[exerciseForIndex(idx)];
+    $('#whoSub').textContent = started
+      ? 'Jour ' + (idx + 1) + ' sur ' + DAYS + ' · ' + ex.label.toLowerCase()
+      : 'Le défi commence le ' + prettyDate(startKey()) + '.';
+    $('#whoList').innerHTML = PEOPLE.map(function (p) {
+      const goal = goalFor(p, idx), reps = started ? getReps(p.id, dayKeyOf(idx)) : 0;
+      const line = started
+        ? fmt(reps) + ' / ' + fmt(goal) + ' ' + ex.label.toLowerCase()
+        : 'Pompes ' + fmt(p.goals.pushups) + ' · Tractions ' + fmt(p.goals.pullups);
+      return '<button class="btn btn-ghost who-pick" data-pick="' + p.id + '"' +
+        (p.id === last ? ' data-last="1"' : '') + ' style="--c:' + p.color + '">' +
+        '<i></i><span><b>' + p.name +
+        (p.id === last ? ' <span class="lastlbl" style="font-size:10px;letter-spacing:.12em">· DERNIER</span>' : '') +
+        '</b><span>' + line + '</span></span>' +
+        (started && goal && reps >= goal ? '<em>fait</em>' : '') + '</button>';
+    }).join('');
+  }
+  paint();
+  whoRefresh = paint;          // les chiffres se mettent à jour si le serveur répond entre-temps
+
   el.addEventListener('click', function (e) {
     const b = e.target.closest('button[data-pick]'); if (!b) return;
     me = b.dataset.pick; ls.set('defi:me', me);
+    whoRefresh = null;
     el.remove(); document.body.style.overflow = '';
     renderAll(); buzz(10);
+    if (done) done();
   });
 }
 
-function boot() {
-  renderSync();
-  if (!me) { chooseWho(); } else { renderAll(); }
+// Propriétaire d'une séance encore en cours, s'il y en a une.
+function liveSessionOwner() {
+  const s = ls.get(SESS_KEY, null);
+  if (!s || !s.active || !s.personId) return null;
+  if (!PEOPLE.some(function (p) { return p.id === s.personId; })) return null;
+  return computeEmom(s, Date.now()).done ? null : s.personId;
+}
 
-  // Reprise d'une séance interrompue (onglet fermé, téléphone en veille…)
+// Reprise d'une séance interrompue (onglet fermé, téléphone en veille…)
+function settleSession() {
   const saved = ls.get(SESS_KEY, null);
   if (saved && saved.active && me && saved.personId === me) {
     const st = computeEmom(saved, Date.now());
@@ -1832,6 +1879,18 @@ function boot() {
       if (!sess.pausedAt) { keepAwake(true); lastTickAt = 0; startLoop(); } else paintSession();
       toast('Séance reprise là où tu l’avais laissée.');
     }
+  }
+}
+
+function boot() {
+  renderSync();
+  const owner = liveSessionOwner();
+  if (owner) {
+    // Séance en cours : on ne coupe pas l'entraînement pour redemander le prénom.
+    me = owner; ls.set('defi:me', me);
+    renderAll(); settleSession();
+  } else {
+    chooseWho(settleSession);
   }
 
   probe();

@@ -17,6 +17,10 @@ est partagé avec les trois.
 
 ## Ce qu'il y a dedans
 
+- **« Qui es-tu ? »** — posé à chaque arrivée sur le site, avec l'avancement de chacun du jour
+  et le dernier prénom utilisé mis en avant. Sans ça, on saisit sous le prénom de quelqu'un
+  d'autre sans s'en apercevoir. Seule exception : si une séance de chrono est en cours, elle
+  reprend directement, sans couper l'entraînement pour poser la question.
 - **Aujourd'hui** — l'objectif du jour, l'anneau de progression, les boutons d'ajout rapide,
   et l'avancement des deux autres en direct.
 - **Chrono EMOM** — une série au début de chaque minute. Tu choisis combien de répétitions par
@@ -98,6 +102,25 @@ de rester quasi instantané sans dépasser le quota gratuit de Netlify.
 **Le chrono ne triche pas.** Il ne compte pas des minutes, il lit l'heure réelle : s'il est mis en
 veille, il se recale au réveil. Et si l'écran s'est éteint pendant plusieurs minutes, il ne crédite
 rien tout seul — il demande combien de séries tu as réellement faites.
+
+## Mettre à jour le site sans rien perdre
+
+Les données ne sont pas dans le fichier HTML. Elles vivent à deux endroits :
+
+- sur le **serveur**, dans le magasin Netlify Blobs rattaché au projet ;
+- dans le **navigateur** de chacun (`localStorage`), ce qui permet de continuer hors réseau.
+
+Redéployer une nouvelle version du site ne touche ni l'un ni l'autre.
+
+**Le seul vrai risque, c'est de créer un nouveau projet au lieu de mettre à jour l'ancien.**
+Un nouveau projet Netlify = une nouvelle adresse = un nouveau magasin vide, et les navigateurs
+ne retrouvent plus rien (le `localStorage` est lié à l'adresse du site).
+
+- **Import Git** : rien à faire, chaque commit poussé redéploie le même projet.
+- **Glisser-déposer** : passe par **le projet existant → onglet Deploys → zone de dépôt en bas
+  de la page**. N'utilise pas `app.netlify.com/drop`, qui crée un projet neuf à chaque fois.
+
+En cas de doute, vérifie que l'adresse du site n'a pas changé après le déploiement.
 
 ## Réglages
 
