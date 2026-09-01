@@ -127,6 +127,16 @@ button{background:none;border:0;cursor:pointer;padding:0}
 .who button[aria-pressed=true]{color:var(--ink-950);background:var(--c)}
 .who button:not([aria-pressed=true]):active{background:var(--surface-2)}
 
+.ident{display:flex;align-items:center;gap:8px;margin-bottom:18px;padding:9px 12px;
+  border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px}
+.ident i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--text-3));flex:none}
+.ident b{font-weight:750}
+.ident span{color:var(--text-3);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.ident button{flex:none;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-2);border:1px solid var(--line);border-radius:999px;padding:5px 10px;transition:.18s}
+.ident button:active{background:var(--surface-2)}
+.who{margin-bottom:12px}
+
 /* ---- Vues --------------------------------------------------------------- */
 .view{display:none;animation:viewIn .34s var(--exp) both}
 .view.on{display:block}
@@ -229,6 +239,8 @@ button{background:none;border:0;cursor:pointer;padding:0}
   opacity:0;animation:cellIn .42s var(--exp) forwards;animation-delay:calc(var(--i)*16ms)}
 @keyframes cellIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 .cell:active{transform:scale(.94)}
+.cal.readonly .cell{cursor:default}
+.cal.readonly .cell:active{transform:none}
 .cell .fill{position:absolute;left:0;right:0;bottom:0;pointer-events:none;
   background:linear-gradient(to top,color-mix(in oklab,var(--c) 46%,transparent),
                                     color-mix(in oklab,var(--c) 14%,transparent));
@@ -381,6 +393,9 @@ button{background:none;border:0;cursor:pointer;padding:0}
 .gapbox p{font-size:13.5px;color:var(--text-2);margin:0 0 16px;line-height:1.45}
 .gapbox .stepper input{background:var(--ink-850);border:1px solid var(--line);border-radius:var(--r-md);
   height:var(--tap);width:88px;flex:none;text-align:center;font-weight:700;font-size:16px}
+.gap.alive #gapNone,.gap.alive .stepper{display:none}
+.gap.alive .row2{grid-template-columns:1fr}
+.gap.alive .gapbox h3{color:var(--hue)}
 
 /* Écran de fin */
 .finish{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
@@ -436,7 +451,11 @@ button{background:none;border:0;cursor:pointer;padding:0}
     </button>
   </header>
 
-  <div class="who" id="who" role="group" aria-label="Choisir la personne"></div>
+  <div class="ident">
+    <i id="identDot"></i>
+    <b id="identName">—</b><span>c'est toi pour cette session</span>
+    <button type="button" id="identChange">Changer</button>
+  </div>
 
   <!-- ====================== AUJOURD'HUI ====================== -->
   <section class="view on" id="v-today" role="tabpanel" aria-labelledby="t-today">
@@ -534,13 +553,11 @@ button{background:none;border:0;cursor:pointer;padding:0}
   <!-- ====================== CALENDRIER ====================== -->
   <section class="view" id="v-cal" role="tabpanel" aria-labelledby="t-cal">
     <div class="kicker">Les 30 jours</div>
+    <div class="who" id="who" role="group" aria-label="Afficher le calendrier de"></div>
     <div class="cal" id="cal"></div>
     <div class="callegend" id="calLegend"></div>
-    <div class="note">
-      Appuie sur un jour pour corriger ou rattraper. Le remplissage de la case, c'est
-      <b id="legendWho">toi</b> ; les trois petites barres en bas, c'est vous trois.
-      <b>P</b> = pompes, <b>T</b> = tractions.
-    </div>
+    <div class="note" id="calNote"></div>
+    <span class="sr" id="legendWho"></span>
   </section>
 
   <!-- ====================== CLASSEMENT ====================== -->
@@ -720,7 +737,8 @@ const POLL_FAST = 2500;           // ça bouge : on regarde toutes les 2,5 s
 const POLL_IDLE = 20000;          // plus rien depuis 3 min : on lève le pied
 const ACTIVE_FOR = 3 * 60000;
 const SLEEP_AFTER = 15 * 60000;   // plus rien depuis 15 min : on arrête complètement
-const PROBE_RETRIES = [60000, 300000, 900000];  // re-sondage si l'API apparait plus tard
+const PROBE_RETRY = 60000;        // re-sondage tant qu'aucun serveur n'a répondu
+const PROBE_RETRY_MAX = 600000;
 
 const $  = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
@@ -765,9 +783,27 @@ function prettyDate(key) {
 }
 
 /* ============================================================================
-   3. FUSION LWW  (aucune écriture d'un ami ne peut en écraser une autre)
+   3. FUSION DES DONNÉES
+   Trier par `updatedAt` revenait à faire confiance à l'horloge de chaque téléphone.
+   Trois horloges non synchronisées, et un compteur pouvait « reculer » : une valeur
+   ancienne écrasait une valeur récente. On trie donc par ce que la donnée VEUT DIRE.
+     1. une correction explicite (rev plus élevé) l'emporte toujours ;
+     2. à rev égal, le plus grand nombre gagne — on ne défait pas des pompes déjà faites ;
+     3. départage déterministe, pour que les trois appareils convergent.
    ========================================================================== */
 function mergeCell(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  const ra = a.rev | 0, rb = b.rev | 0;
+  if (ra !== rb) return ra > rb ? a : b;
+  const pa = +a.reps || 0, pb = +b.reps || 0;
+  if (pa !== pb) return pa > pb ? a : b;
+  const ta = +a.updatedAt || 0, tb = +b.updatedAt || 0;
+  if (ta !== tb) return ta > tb ? a : b;
+  return String(a.by || '') >= String(b.by || '') ? a : b;
+}
+// La config reste en dernier-écrit-gagne : ce sont des choix rares et délibérés.
+function mergeCfg(a, b) {
   if (!a) return b;
   if (!b) return a;
   const ta = +a.updatedAt || 0, tb = +b.updatedAt || 0;
@@ -779,7 +815,7 @@ function mergeState(a, b) {
   const out = { v:1, config:{}, entries:{} };
   const keys = (s) => Object.keys(s || {});
   const uni = (x, y) => keys(x).concat(keys(y)).filter((v, i, arr) => arr.indexOf(v) === i).sort();
-  uni(A.config, B.config).forEach((k) => { out.config[k] = mergeCell(A.config[k], B.config[k]); });
+  uni(A.config, B.config).forEach((k) => { out.config[k] = mergeCfg(A.config[k], B.config[k]); });
   uni(A.entries, B.entries).forEach((k) => { out.entries[k] = mergeCell(A.entries[k], B.entries[k]); });
   return out;
 }
@@ -820,7 +856,7 @@ function saveLocal() { ls.set(SKEY(), state); }
 function saveQueue() { ls.set(QKEY(), queue); }
 
 function writeCell(section, key, cell) {
-  const won = mergeCell(state[section][key], cell);
+  const won = (section === 'config' ? mergeCfg : mergeCell)(state[section][key], cell);
   state[section][key] = won;
   if (won === cell) { queue[section][key] = cell; saveQueue(); }
   saveLocal();
@@ -828,9 +864,18 @@ function writeCell(section, key, cell) {
   schedulePush();
   bumpActivity();
 }
-const setReps = (personId, dayKey, reps) =>
-  writeCell('entries', personId + '|' + dayKey,
-    { reps: clamp(Math.round(reps) || 0, 0, 100000), updatedAt: Date.now(), by: deviceId });
+// `correction: true` = valeur tapée à la main par l'utilisateur. C'est le SEUL moyen de
+// faire baisser un compteur ; elle incrémente `rev` pour passer devant toute progression.
+function setReps(personId, dayKey, reps, correction) {
+  const k = personId + '|' + dayKey;
+  const cur = state.entries[k];
+  writeCell('entries', k, {
+    reps: clamp(Math.round(reps) || 0, 0, 100000),
+    updatedAt: Date.now(),
+    by: deviceId,
+    rev: (cur ? cur.rev | 0 : 0) + (correction ? 1 : 0),
+  });
+}
 const setConf = (k, value) =>
   writeCell('config', k, { value: String(value), updatedAt: Date.now(), by: deviceId });
 
@@ -843,10 +888,18 @@ function absorb(remote) {
   if (JSON.stringify(state) !== before) { saveLocal(); renderAll(); return true; }
   return false;
 }
-function clearSent(sent) {
+// On ne retire de la file que ce que le serveur a effectivement pris en compte.
+// Sinon une écriture perdue dans une course serveur disparaissait sans jamais être rejouée.
+function clearSent(sent, serverState) {
+  const merge = { entries: mergeCell, config: mergeCfg };
   ['entries', 'config'].forEach(function (sec) {
     Object.keys(sent[sec] || {}).forEach(function (k) {
-      if (queue[sec][k] && queue[sec][k].updatedAt === sent[sec][k].updatedAt) delete queue[sec][k];
+      const mine = queue[sec][k];
+      if (!mine || mine.updatedAt !== sent[sec][k].updatedAt) return;   // remplacée entre-temps
+      const theirs = serverState && serverState[sec] ? serverState[sec][k] : null;
+      // Notre cellule est acquittée si le serveur la renvoie, ou renvoie mieux :
+      // dans les deux cas, la rejouer n'apporterait rien.
+      if (theirs && merge[sec](theirs, mine) === theirs) delete queue[sec][k];
     });
   });
   saveQueue();
@@ -867,14 +920,15 @@ async function push() {
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    clearSent(sent);
+    clearSent(sent, data.state);
     version = data.version || null;
     absorb(data.state);
     failures = 0; setMode('cloud');
     return true;
   } catch (e) {
     failures++; setMode('offline');
-    setTimeout(push, backoffMs());
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(push, backoffMs());
     return false;
   } finally { inFlight = false; renderSync(); }
 }
@@ -903,8 +957,9 @@ function schedulePush() {
   pushTimer = setTimeout(push, 350);   // regroupe les clics rapides en un seul envoi
 }
 
-let probeAttempt = 0;
+let probeAttempt = 0, probeTimer = null;
 async function probe() {
+  clearTimeout(probeTimer);
   // Fichier ouvert en double-clic : toute requête échouerait, on passe direct en local.
   if (location.protocol === 'file:') { endpoint = null; setMode('local'); return; }
   const candidates = ['/api/state', '/.netlify/functions/state'];
@@ -922,8 +977,11 @@ async function probe() {
     } catch (e) { /* candidat suivant */ }
   }
   endpoint = null; setMode('local');
-  // Le site a pu être déployé sans les fonctions puis corrigé : on retente, sans s'acharner.
-  if (probeAttempt < PROBE_RETRIES.length) setTimeout(probe, PROBE_RETRIES[probeAttempt++]);
+  // Réseau coupé au lancement, ou fonctions déployées plus tard : on retente indéfiniment,
+  // en espaçant. Rester bloqué en « Local » ferait gonfler la file d'attente en silence.
+  probeAttempt++;
+  clearTimeout(probeTimer);
+  probeTimer = setTimeout(probe, Math.min(PROBE_RETRY * probeAttempt, PROBE_RETRY_MAX));
 }
 
 // Cadence adaptative : rapide tant que ça bouge, plus lente quand tout le monde est au repos.
@@ -968,7 +1026,17 @@ function startPolling() {
     }
   });
 }
-window.addEventListener('online',  function () { browserOnline = true;  setMode(endpoint ? 'cloud' : 'local'); push(); pull(); });
+// Un autre onglet a écrit : on relit au lieu de continuer sur une copie périmée.
+window.addEventListener('storage', function (e) {
+  if (!e || e.key !== SKEY()) return;
+  const fromOther = ls.get(SKEY(), null);
+  if (fromOther) { state = mergeState(state, fromOther); saveLocal(); renderAll(); }
+});
+window.addEventListener('online',  function () {
+  browserOnline = true;
+  if (!endpoint) { probeAttempt = 0; probe(); return; }
+  setMode('cloud'); push(); pull();
+});
 window.addEventListener('offline', function () { browserOnline = false; setMode('offline'); });
 
 /* ============================================================================
@@ -1017,8 +1085,13 @@ function statsFor(person) {
 /* ============================================================================
    6. ÉTAT DE L'INTERFACE
    ========================================================================== */
-let me = ls.get('defi:me', null);
-if (!PEOPLE.some((p) => p.id === me)) me = null;
+// Le dernier prénom sert UNIQUEMENT à mettre en avant un choix. `me` reste nul
+// tant que l'utilisateur n'a pas confirmé : les verrous d'écriture s'appuient dessus.
+let lastMe = ls.get('defi:me', null);
+if (!PEOPLE.some((p) => p.id === lastMe)) lastMe = null;
+let me = null;
+let viewPerson = null;          // qui le CALENDRIER affiche — jamais qui écrit
+let fromTouched = false;        // l'utilisateur a-t-il modifié « Repartir de » ?
 let currentView = 'today';
 let rankMode = 'reg';
 let sheetDayIndex = 0;
@@ -1041,10 +1114,13 @@ function setHue(exKey) {
 }
 
 function renderWho() {
-  const el = $('#who');
-  el.innerHTML = PEOPLE.map((p) =>
+  const seen = viewPerson || me || PEOPLE[0].id;
+  $('#who').innerHTML = PEOPLE.map((p) =>
     '<button type="button" data-id="' + p.id + '" style="--c:' + p.color + '" aria-pressed="' +
-    (p.id === me) + '"><span class="nm">' + p.name + '</span></button>').join('');
+    (p.id === seen) + '"><span class="nm">' + p.name + '</span></button>').join('');
+  const p = me ? personById(me) : null;
+  $('#identName').textContent = p ? p.name : '—';
+  $('#identDot').style.setProperty('--c', p ? p.color : 'var(--text-3)');
 }
 
 function renderSync() {
@@ -1148,7 +1224,7 @@ function renderToday() {
 }
 
 function renderCal() {
-  const p = meP(), ti = indexOfToday();
+  const p = personById(viewPerson || me || PEOPLE[0].id), ti = indexOfToday();
   let html = '';
   for (let i = 0; i < DAYS; i++) {
     const key = dayKeyOf(i), exKey = exerciseForIndex(i), ex = EX[exKey];
@@ -1174,6 +1250,14 @@ function renderCal() {
   $('#calLegend').innerHTML = PEOPLE.map((m) =>
     '<span style="--c:' + m.color + '"><i></i>' + m.name + '</span>').join('');
   $('#legendWho').textContent = p.name;
+  const autre = me && p.id !== me;
+  $('#calNote').innerHTML = autre
+    ? 'Tu regardes le calendrier de <b>' + p.name + '</b> — lecture seule. Reviens sur ' +
+      '<b>' + personById(me).name + '</b> pour corriger un jour.'
+    : 'Appuie sur un jour pour corriger ou rattraper. Le remplissage de la case, c’est ' +
+      '<b>toi</b> ; les trois petites barres en bas, c’est vous trois. ' +
+      '<b>P</b> = pompes, <b>T</b> = tractions.';
+  $('#cal').classList.toggle('readonly', !!autre);
 }
 
 function renderRank() {
@@ -1242,7 +1326,8 @@ function renderChrono() {
   const exKey = exerciseForIndex(idx), goal = goalFor(p, idx);
   const done = getReps(p.id, dayKeyOf(idx));
   const from = $('#startFrom');
-  if (document.activeElement !== from) from.value = Math.min(done, goal);
+  // Une réponse du serveur ne doit pas effacer ce que l'utilisateur vient de taper.
+  if (document.activeElement !== from && !fromTouched) from.value = Math.min(done, goal);
   from.max = goal;
 
   $('#chronoTitle').textContent = EX[exKey].word + ' · ' + fmt(goal);
@@ -1278,6 +1363,7 @@ function renderAll() {
    8. NAVIGATION, FEUILLES, INTERACTIONS
    ========================================================================== */
 function showView(v) {
+  if (currentView === 'cal' && v !== 'cal' && me) { viewPerson = me; renderWho(); renderCal(); }
   currentView = v;
   $$('.view').forEach((s) => s.classList.toggle('on', s.id === 'v-' + v));
   $$('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.v === v)));
@@ -1299,14 +1385,24 @@ $$('[data-close]').forEach((el) => el.addEventListener('click', function () {
 }));
 document.addEventListener('keydown', function (e) {
   if (e.key !== 'Escape') return;
-  const open = $$('.sheet.on'); if (open.length) closeSheet('#' + open[open.length - 1].id);
+  // « Qui es-tu ? » n'est pas refermable : il n'y a rien à faire avant d'avoir répondu.
+  const open = $$('.sheet.on').filter(function (x) { return x.id !== 'sheetWho'; });
+  if (open.length) closeSheet('#' + open[open.length - 1].id);
 });
 
-/* --- Choix de la personne --- */
+/* --- Filtre d'affichage du calendrier. Ne change PAS qui tu es. --- */
 $('#who').addEventListener('click', function (e) {
   const b = e.target.closest('button[data-id]'); if (!b) return;
-  me = b.dataset.id; ls.set('defi:me', me);
-  renderAll(); buzz(8);
+  viewPerson = b.dataset.id;
+  renderWho(); renderCal(); buzz(8);
+});
+
+/* --- Changer d'identité : uniquement en repassant par l'écran d'accueil. --- */
+$('#identChange').addEventListener('click', function () {
+  if (sess.active && !confirm('Une séance est en cours. Changer de personne va l’arrêter. Continuer ?')) return;
+  if (!sess.active && !confirm('Revenir à l’écran « Qui es-tu ? » ?')) return;
+  if (sess.active) endSession(true);
+  location.reload();
 });
 
 /* --- Ajout rapide + validation --- */
@@ -1363,6 +1459,13 @@ function openDaySheet(i) {
 }
 $('#cal').addEventListener('click', function (e) {
   const c = e.target.closest('button[data-day]'); if (!c) return;
+  // Le calendrier peut afficher quelqu'un d'autre. On n'ouvre l'édition que sur le sien,
+  // sinon on modifierait SA journée en croyant corriger celle qu'on regarde.
+  const vu = viewPerson || me;
+  if (vu !== me) {
+    toast('Calendrier de ' + personById(vu).name + ' — lecture seule.');
+    return;
+  }
   openDaySheet(+c.dataset.day);
 });
 $('#sdChips').addEventListener('click', function (e) {
@@ -1376,7 +1479,12 @@ $('#sdSave').addEventListener('click', function () {
   const p = meP(), i = sheetDayIndex, goal = goalFor(p, i);
   const before = getReps(p.id, dayKeyOf(i));
   const val = clamp(+$('#sdInput').value || 0, 0, 100000);
-  setReps(p.id, dayKeyOf(i), val);
+  setReps(p.id, dayKeyOf(i), val, true);   // saisie manuelle = correction, peut faire baisser
+  // Sans ça, une séance encore en cours repousserait aussitôt le compteur vers le haut.
+  if (sess.active && sess.personId === p.id && sess.dayIndex === i) {
+    sess.from = val; sess.witnessed = 0; sess.marked = 0;
+    seekToSet(0); sess.checkFrom = 0; saveSession();
+  }
   closeSheet('#sheetDay');
   if (before < goal && val >= goal && i === indexOfToday()) celebrate();
   else toast('Jour ' + (i + 1) + ' enregistré : ' + fmt(val) + '.');
@@ -1434,10 +1542,10 @@ $('#repChips').addEventListener('click', function (e) {
 });
 $('#repsMinus').addEventListener('click', () => { $('#repsInput').value = Math.max(1, (+$('#repsInput').value || 1) - 1); updateRepsHelp(); });
 $('#repsPlus').addEventListener('click', () => { $('#repsInput').value = Math.min(500, (+$('#repsInput').value || 1) + 1); updateRepsHelp(); });
-$('#fromMinus').addEventListener('click', () => { $('#startFrom').value = Math.max(0, (+$('#startFrom').value || 0) - 10); updateRepsHelp(); });
-$('#fromPlus').addEventListener('click', () => { $('#startFrom').value = (+$('#startFrom').value || 0) + 10; updateRepsHelp(); });
+$('#fromMinus').addEventListener('click', () => { fromTouched = true; $('#startFrom').value = Math.max(0, (+$('#startFrom').value || 0) - 10); updateRepsHelp(); });
+$('#fromPlus').addEventListener('click', () => { fromTouched = true; $('#startFrom').value = (+$('#startFrom').value || 0) + 10; updateRepsHelp(); });
 $('#repsInput').addEventListener('input', updateRepsHelp);
-$('#startFrom').addEventListener('input', updateRepsHelp);
+$('#startFrom').addEventListener('input', function () { fromTouched = true; updateRepsHelp(); });
 
 /* ============================================================================
    9. SON ET ÉCRAN
@@ -1517,7 +1625,8 @@ async function keepAwake(on) {
 const MIN = 60000;
 const SESS_KEY = 'defi:session';
 const GAP_MS = 5000;        // au-delà, la page ne tournait plus : temps non observé
-const GAP_SETS = 2;         // on ne questionne qu'à partir de 2 séries non observées
+const GAP_SETS = 1;         // toute série franchie hors observation est questionnée
+const IDLE_SETS = 10;       // séries d'affilée sans un geste avant de demander confirmation
 let sess = { active:false };
 let rafId = null, tickId = null, lastTickAt = 0;
 let lastSetIndex = -1, lastTickSec = -1, scheduledUpTo = -1, gapPending = null;
@@ -1547,6 +1656,8 @@ function seekToSet(n) {
   sess.startedAt = Date.now() - sess.pausedMs - n * MIN;
   sess.pausedAt = null;
   sess.marked = n;
+  sess.witnessed = Math.max(sess.witnessed | 0, n);
+  sess.tickAt = Date.now();
   lastSetIndex = -1; scheduledUpTo = -1; clearScheduled();
   saveSession();
 }
@@ -1559,6 +1670,21 @@ function totalFor(s, st) {
   return clamp(s.from + Math.min(remaining, sets * s.per), 0, 100000);
 }
 const isResting = (st) => !st.done && (sess.marked || 0) > st.setIndex;
+
+// LE SEUL calcul autorisé à écrire des répétitions : séries observées par un tick
+// contigu, ou validées explicitement à la main. Jamais du temps écoulé.
+function observedTotal(s, st) {
+  const remaining = Math.max(0, s.goal - s.from);
+  const sets = Math.min(st.totalSets, Math.max(s.witnessed | 0, s.marked | 0));
+  return clamp(s.from + Math.min(remaining, sets * s.per), 0, 100000);
+}
+function creditObserved() {
+  if (!sess.active) return 0;
+  const total = observedTotal(sess, computeEmom(sess, Date.now()));
+  if (total > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
+    setReps(sess.personId, dayKeyOf(sess.dayIndex), total);
+  return total;
+}
 
 function saveSession() { if (sess.active) ls.set(SESS_KEY, sess); else ls.del(SESS_KEY); }
 
@@ -1587,9 +1713,9 @@ function startSession() {
 
   anchorAudio(); keepAudioAlive(true);      // dans le geste utilisateur : indispensable sur iOS
   sess = { active:true, personId:p.id, dayIndex:idx, exKey:exKey, goal:goal, from:from, per:per,
-           startedAt: Date.now(), pausedMs:0, pausedAt:null, marked:0 };
+           startedAt: Date.now(), pausedMs:0, pausedAt:null, marked:0, witnessed:0, tickAt: Date.now() };
   lastSetIndex = -1; lastTickSec = -1; scheduledUpTo = -1; gapPending = null;
-  clearScheduled(); saveSession();
+  clearScheduled(); saveSession(); fromTouched = false; sess.checkFrom = 0;
   $('#sessWho').textContent = p.name + ' · ' + EX[exKey].label;
   $('#finish').classList.remove('on');
   $('#gap').classList.remove('on');
@@ -1603,12 +1729,7 @@ function startSession() {
 
 function endSession(save) {
   stopLoop(); clearScheduled(); keepAudioAlive(false); keepAwake(false);
-  if (save && sess.active) {
-    const st = computeEmom(sess, Date.now());
-    const total = totalFor(sess, st);
-    if (total > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
-      setReps(sess.personId, dayKeyOf(sess.dayIndex), total);
-  }
+  if (save) creditObserved();
   sess = { active:false }; gapPending = null;
   saveSession();
   $('#session').classList.remove('on');
@@ -1631,12 +1752,15 @@ function confetti() {
 
 function finishSession() {
   const p = personById(sess.personId), goal = sess.goal, idx = sess.dayIndex;
-  setReps(sess.personId, dayKeyOf(idx), Math.max(goal, getReps(sess.personId, dayKeyOf(idx))));
+  const total = creditObserved();     // et surtout pas `goal` d'office
   stopLoop(); clearScheduled(); keepAudioAlive(false); keepAwake(false);
   const st = statsFor(p);
   $('#finishTitle').textContent = 'TERMINÉ';
-  $('#finishSub').innerHTML = fmt(goal) + ' ' + EX[sess.exKey].label.toLowerCase() + ', jour ' + (idx + 1) + ' validé.<br>' +
-    (st.streak > 1 ? st.streak + ' jours d’affilée.' : 'Première pierre.');
+  $('#finishTitle').textContent = total >= goal ? 'TERMINÉ' : 'SÉANCE FINIE';
+  $('#finishSub').innerHTML = fmt(total) + ' / ' + fmt(goal) + ' ' + EX[sess.exKey].label.toLowerCase() +
+    ', jour ' + (idx + 1) + '.<br>' +
+    (total >= goal ? (st.streak > 1 ? st.streak + ' jours d’affilée.' : 'Première pierre.')
+                   : 'Il reste ' + fmt(goal - total) + ' à faire.');
   confetti();
   $('#finish').classList.add('on');
   beep([660, 880, 1320], 0.18, 0.3);
@@ -1647,6 +1771,9 @@ function finishSession() {
 
 // Le téléphone s'est endormi : on ne crédite RIEN d'office, on demande.
 function askGap(crossed, bankedBefore) {
+  aliveAsked = false;
+  $('#gap').classList.remove('alive');
+  $('#gapAll').textContent = 'Toutes';
   gapPending = { crossed: crossed, before: bankedBefore };
   stopLoop(); clearScheduled();
   // On revient à l'état d'AVANT la veille : tant que la question est ouverte,
@@ -1670,10 +1797,9 @@ function resolveGap(n) {
   const target = gapPending.before + done;
   gapPending = null;
   seekToSet(target);
+  sess.checkFrom = target;
   $('#gap').classList.remove('on');
-  const banked = totalFor(sess, computeEmom(sess, Date.now()));
-  if (banked > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
-    setReps(sess.personId, dayKeyOf(sess.dayIndex), banked);
+  creditObserved();
   anchorAudio(); saveSession(); startLoop();
 }
 
@@ -1715,10 +1841,12 @@ function tick() {
   const prevIndex = lastSetIndex;
   lastTickAt = now;
 
-  // Temps non observé (veille, autre appli, onglet gelé) : on teste AVANT de peindre,
-  // pour ne jamais afficher des répétitions qui n'ont pas été validées.
+  // Un tick n'atteste du temps écoulé que s'il suit de près le précédent. En arrière-plan,
+  // les navigateurs brident le minuteur à environ un appel par minute : sans cette garde,
+  // un onglet oublié créditait une série chaque minute sans que personne ne bouge.
+  const contigu = gap <= GAP_MS;
   const raw = computeEmom(sess, now);
-  if (!sess.pausedAt && gap > GAP_MS && prevIndex >= 0 && raw.setIndex - prevIndex >= GAP_SETS) {
+  if (!sess.pausedAt && !contigu && prevIndex >= 0 && raw.setIndex - prevIndex >= GAP_SETS) {
     askGap(raw.setIndex - prevIndex, prevIndex);
     return;
   }
@@ -1726,19 +1854,63 @@ function tick() {
   const st = paintSession();
   if (sess.pausedAt) return;
 
+  // Trace de ce que la page a RÉELLEMENT vu tourner. Rien d'autre ne sera jamais crédité.
+  if (contigu) {
+    sess.tickAt = now;
+    const seen = Math.max(sess.witnessed | 0, st.banked);
+    if (seen !== (sess.witnessed | 0)) { sess.witnessed = seen; saveSession(); }
+    else if (now - (sess.savedAt || 0) > 5000) { sess.savedAt = now; saveSession(); }
+  }
+
   if (st.setIndex !== prevIndex) {
-    if (prevIndex >= 0) {
-      if (gap <= GAP_MS) { beep([880, 1320], 0.15, 0.11); buzz([20, 50, 20]); }
-      const banked = totalFor(sess, st);
-      if (banked > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
-        setReps(sess.personId, dayKeyOf(sess.dayIndex), banked);
+    if (prevIndex >= 0 && contigu) {
+      beep([880, 1320], 0.15, 0.11);
+      buzz([20, 50, 20]);
+      creditObserved();
     }
     lastSetIndex = st.setIndex; lastTickSec = -1;
     saveSession();
   }
+  // Une séance lancée puis oubliée, écran allumé, remplissait l'objectif toute seule.
+  // Au bout de dix séries sans le moindre geste, on se met en pause et on demande.
+  if (!aliveAsked && st.setIndex - (sess.checkFrom | 0) >= IDLE_SETS) { askAlive(); return; }
+
   scheduleBeeps(st);
   if (st.done) { finishSession(); return; }
 }
+
+// Tout geste sur l'écran de séance vaut « je suis là ».
+let aliveAsked = false;
+function noteAlive() {
+  if (!sess.active) return;
+  sess.checkFrom = computeEmom(sess, Date.now()).setIndex;
+}
+$('#session').addEventListener('pointerdown', noteAlive, { passive: true });
+
+function askAlive() {
+  aliveAsked = true;
+  sess.pausedAt = sess.pausedAt || Date.now();
+  stopLoop(); clearScheduled(); paintSession(); keepAwake(false);
+  $('#gap').classList.add('alive');
+  $('#gapTitle').textContent = 'Toujours là ?';
+  $('#gapSub').textContent = 'Dix minutes sans un geste : le chrono s’est mis en pause pour ne pas ' +
+    'compter des séries que tu n’aurais pas faites.';
+  $('#gapAll').textContent = 'Je suis là, on continue';
+  $('#gap').classList.add('on');
+  buzz([40, 80, 40, 80, 40]);
+  beep([520, 400], 0.12, 0.2);
+}
+function resumeAlive() {
+  aliveAsked = false;
+  $('#gap').classList.remove('on', 'alive');
+  $('#gapAll').textContent = 'Toutes';
+  if (sess.pausedAt) { sess.pausedMs += Date.now() - sess.pausedAt; sess.pausedAt = null; }
+  sess.checkFrom = computeEmom(sess, Date.now()).setIndex;
+  lastSetIndex = -1; scheduledUpTo = -1;
+  anchorAudio(); keepAudioAlive(true); keepAwake(true);
+  saveSession(); startLoop();
+}
+
 
 // rAF ne tourne pas du tout quand l'onglet est caché : setInterval est le filet.
 function startLoop() {
@@ -1785,9 +1957,7 @@ $('#sSkip').addEventListener('click', function () {
     // Série finie : on la valide immédiatement — le repos, lui, continue de tourner
     // jusqu'à la fin de la minute. C'est tout l'intérêt de l'EMOM.
     sess.marked = st.setIndex + 1;
-    const tot = totalFor(sess, st);
-    if (tot > getReps(sess.personId, dayKeyOf(sess.dayIndex)))
-      setReps(sess.personId, dayKeyOf(sess.dayIndex), tot);
+    creditObserved();
   }
   saveSession(); buzz(12);
   if (!rafId && !tickId) startLoop(); else tick();
@@ -1797,7 +1967,10 @@ $('#sessQuit').addEventListener('click', function () {
   if (confirm('Quitter la séance ? Les séries déjà validées sont enregistrées.')) endSession(true);
 });
 $('#finishClose').addEventListener('click', () => endSession(false));
-$('#gapAll').addEventListener('click', function () { resolveGap(gapPending ? gapPending.crossed : 0); });
+$('#gapAll').addEventListener('click', function () {
+  if ($('#gap').classList.contains('alive')) { resumeAlive(); return; }
+  resolveGap(gapPending ? gapPending.crossed : 0);
+});
 $('#gapNone').addEventListener('click', function () { resolveGap(0); });
 $('#gapSave').addEventListener('click', function () { resolveGap(+$('#gapInput').value || 0); });
 
@@ -1809,7 +1982,7 @@ $('#gapSave').addEventListener('click', function () { resolveGap(+$('#gapInput')
 // donc c'est un seul appui.
 let whoRefresh = null;
 function chooseWho(done) {
-  const last = ls.get('defi:me', null);
+  const last = lastMe;
   const el = document.createElement('div');
   el.className = 'sheet on'; el.id = 'sheetWho';
   el.innerHTML = '<div class="scrim"></div><div class="panel"><div class="grab"></div>' +
@@ -1844,7 +2017,8 @@ function chooseWho(done) {
 
   el.addEventListener('click', function (e) {
     const b = e.target.closest('button[data-pick]'); if (!b) return;
-    me = b.dataset.pick; ls.set('defi:me', me);
+    me = b.dataset.pick; lastMe = me; ls.set('defi:me', me);
+    viewPerson = me;
     whoRefresh = null;
     el.remove(); document.body.style.overflow = '';
     renderAll(); buzz(10);
@@ -1857,28 +2031,63 @@ function liveSessionOwner() {
   const s = ls.get(SESS_KEY, null);
   if (!s || !s.active || !s.personId) return null;
   if (!PEOPLE.some(function (p) { return p.id === s.personId; })) return null;
+  // Même seuil que la reprise : au-delà, la séance sera close, donc on repose
+  // la question de l'identité plutôt que de la sauter pour rien.
+  if (Date.now() - (s.tickAt || s.startedAt) > RESUME_WINDOW) return null;
   return computeEmom(s, Date.now()).done ? null : s.personId;
 }
 
 // Reprise d'une séance interrompue (onglet fermé, téléphone en veille…)
+const RESUME_WINDOW = 90000;   // au-delà, la séance est close plutôt que reprise
+
 function settleSession() {
   const saved = ls.get(SESS_KEY, null);
-  if (saved && saved.active && me && saved.personId === me) {
-    const st = computeEmom(saved, Date.now());
-    if (st.done) {
-      const total = totalFor(saved, st);
-      if (total > getReps(saved.personId, dayKeyOf(saved.dayIndex)))
-        setReps(saved.personId, dayKeyOf(saved.dayIndex), total);
-      ls.del(SESS_KEY);
-      toast('Séance précédente terminée et enregistrée.');
-    } else {
-      sess = saved; lastSetIndex = -1;
-      $('#sessWho').textContent = personById(sess.personId).name + ' · ' + EX[sess.exKey].label;
-      $('#session').classList.add('on'); document.body.style.overflow = 'hidden';
-      $('#sPauseLbl').textContent = sess.pausedAt ? 'Reprendre' : 'Pause';
-      if (!sess.pausedAt) { keepAwake(true); lastTickAt = 0; startLoop(); } else paintSession();
-      toast('Séance reprise là où tu l’avais laissée.');
-    }
+  if (!saved || !saved.active || !me) return;
+  if (saved.personId !== me) {
+    // Séance laissée par quelqu'un d'autre sur cet appareil : on ne la reprend
+    // évidemment pas, et on ne la laisse pas non plus traîner pour le prochain
+    // démarrage — c'est comme ça que des séries partaient sur le mauvais prénom.
+    if (Date.now() - (saved.tickAt || saved.startedAt) > RESUME_WINDOW) ls.del(SESS_KEY);
+    return;
+  }
+
+  const now = Date.now();
+  const st = computeEmom(saved, now);
+  // ON NE CRÉDITE QUE CE QUI A ÉTÉ VU : séries observées par un tick, ou validées
+  // à la main. Le temps écoulé pendant que l'onglet était fermé ne compte pas —
+  // sinon rouvrir la page des heures plus tard créditait l'objectif entier.
+  const observed = Math.min(st.totalSets, Math.max(saved.witnessed | 0, saved.marked | 0));
+  const remaining = Math.max(0, saved.goal - saved.from);
+  const credited = clamp(saved.from + Math.min(remaining, observed * saved.per), 0, 100000);
+  const absence = now - (saved.tickAt || saved.startedAt);
+
+  if (credited > getReps(saved.personId, dayKeyOf(saved.dayIndex)))
+    setReps(saved.personId, dayKeyOf(saved.dayIndex), credited);
+
+  if (absence > RESUME_WINDOW || observed >= st.totalSets) {
+    ls.del(SESS_KEY);
+    toast(observed
+      ? 'Séance précédente : ' + fmt(credited) + ' enregistrées.'
+      : 'Séance précédente abandonnée, rien n’a été compté.');
+    return;
+  }
+
+  // Absence courte (rechargement, écran verrouillé un instant) : on reprend, mais
+  // recalé sur la dernière série confirmée — la minute perdue n'est pas offerte.
+  const etaitEnPause = !!saved.pausedAt;
+  sess = saved; lastSetIndex = -1;
+  seekToSet(observed);                      // seekToSet lève la pause : on la remet si besoin
+  $('#sessWho').textContent = personById(sess.personId).name + ' · ' + EX[sess.exKey].label;
+  $('#session').classList.add('on'); document.body.style.overflow = 'hidden';
+  if (etaitEnPause) {
+    sess.pausedAt = Date.now();
+    $('#sPauseLbl').textContent = 'Reprendre';
+    saveSession(); paintSession();
+    toast('Séance retrouvée, toujours en pause.');
+  } else {
+    $('#sPauseLbl').textContent = 'Pause';
+    keepAwake(true); lastTickAt = 0; startLoop();
+    toast('Séance reprise à la série ' + (observed + 1) + '.');
   }
 }
 
@@ -1887,7 +2096,7 @@ function boot() {
   const owner = liveSessionOwner();
   if (owner) {
     // Séance en cours : on ne coupe pas l'entraînement pour redemander le prénom.
-    me = owner; ls.set('defi:me', me);
+    me = owner; viewPerson = me;   // en mémoire seulement : on ne réécrit pas le défaut
     renderAll(); settleSession();
   } else {
     chooseWho(settleSession);

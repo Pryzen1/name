@@ -52,8 +52,24 @@ const cleanRoom = (r) =>
 
 const emptyState = () => ({ v: 1, config: {}, entries: {} });
 
-// LWW par entrée : l'horodatage le plus récent gagne, égalité départagée par l'id d'écriture.
+// Les horloges des trois téléphones ne sont pas synchronisées : trier sur `updatedAt`
+// laissait une valeur ancienne écraser une valeur récente. On trie sur le sens de la
+// donnée : une correction explicite (rev) d'abord, sinon le plus grand nombre de
+// répétitions — un compteur ne recule pas tout seul.
 function mergeCell(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  const ra = a.rev | 0, rb = b.rev | 0;
+  if (ra !== rb) return ra > rb ? a : b;
+  const pa = Number(a.reps) || 0, pb = Number(b.reps) || 0;
+  if (pa !== pb) return pa > pb ? a : b;
+  const ta = Number(a.updatedAt) || 0, tb = Number(b.updatedAt) || 0;
+  if (ta !== tb) return ta > tb ? a : b;
+  return String(a.by || '') >= String(b.by || '') ? a : b;
+}
+
+// La config reste en dernier-écrit-gagne.
+function mergeCfg(a, b) {
   if (!a) return b;
   if (!b) return a;
   const ta = Number(a.updatedAt) || 0, tb = Number(b.updatedAt) || 0;
@@ -66,7 +82,7 @@ function mergeState(a, b) {
   const A = a || emptyState(), B = b || emptyState();
   const out = { v: 1, config: {}, entries: {} };
   for (const k of [...new Set([...Object.keys(A.config || {}), ...Object.keys(B.config || {})])].sort())
-    out.config[k] = mergeCell(A.config?.[k], B.config?.[k]);
+    out.config[k] = mergeCfg(A.config?.[k], B.config?.[k]);
   for (const k of [...new Set([...Object.keys(A.entries || {}), ...Object.keys(B.entries || {})])].sort())
     out.entries[k] = mergeCell(A.entries?.[k], B.entries?.[k]);
   return out;
@@ -85,12 +101,14 @@ function sanitize(state, now) {
     if (!c || typeof c !== 'object') return null;
     let updatedAt = Number(c.updatedAt);
     if (!Number.isFinite(updatedAt)) return null;
-    // Un appareil en avance de 10 min gagnerait sinon tous les arbitrages LWW.
-    if (updatedAt > ceiling) updatedAt = ceiling;
+    // Un appareil en avance gagnerait sinon les départages. On le ramène à maintenant,
+    // pas à la borne : estampiller dans le futur ferait diverger client et serveur.
+    if (updatedAt > ceiling) updatedAt = now;
     const by = typeof c.by === 'string' ? c.by.slice(0, 40) : '';
     if (numeric) {
       const reps = Math.max(0, Math.min(100000, Math.round(Number(c.reps) || 0)));
-      return { reps, updatedAt, by };
+      const rev = Math.max(0, Math.min(10000, Math.round(Number(c.rev) || 0)));
+      return { reps, updatedAt, by, rev };
     }
     if (typeof c.value !== 'string' || c.value.length > 200) return null;
     return { value: c.value, updatedAt, by };
@@ -166,8 +184,8 @@ export default async (request) => {
 
   // Lecture -> fusion -> écriture conditionnelle. En cas de course avec un autre ami,
   // l'ETag ne correspond plus : on recommence sur l'état frais (3 essais).
-  let merged = null;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  let merged = null, persisted = false;
+  for (let attempt = 0; attempt < 5; attempt++) {
     let current = emptyState(), etag;
     try {
       const got = await store.getWithMetadata(room, { type: 'json', consistency: 'strong' });
@@ -175,21 +193,30 @@ export default async (request) => {
     } catch { /* premier écrit sur ce salon */ }
 
     merged = mergeState(current, patch);
-    if (version(merged) === version(current)) break; // rien de neuf : pas d'écriture inutile
+    if (version(merged) === version(current)) { persisted = true; break; } // rien de neuf
 
     try {
       const opts = etag ? { onlyIfMatch: etag } : { onlyIfNew: true };
       const res = await store.setJSON(room, merged, opts);
       if (res?.modified === false) continue; // quelqu'un a écrit entre-temps -> on refait
+      persisted = true;
       break;
     } catch (err) {
-      // Un runtime plus ancien peut ignorer l'écriture conditionnelle : on écrit franchement.
-      // La fusion étant commutative, une écriture perdue est rattrapée au prochain POST du client.
-      if (attempt === 2) {
-        try { await store.setJSON(room, merged); } catch (e2) {
-          return json(500, { error: 'ecriture-impossible', detail: String(e2?.message || e2) }, cors);
-        }
-      }
+      // Un runtime plus ancien peut ignorer l'écriture conditionnelle : on réessaiera
+      // en écriture franche ci-dessous plutôt que d'abandonner en silence.
+    }
+  }
+
+  // Ne JAMAIS répondre « voilà l'état fusionné » sans l'avoir persisté : le client
+  // viderait sa file d'attente et la saisie disparaîtrait sans que personne ne le voie.
+  if (!persisted) {
+    try {
+      const fresh = sanitize(await store.get(room, { type: 'json' }));
+      merged = mergeState(fresh, patch);
+      await store.setJSON(room, merged);
+      persisted = true;
+    } catch (e2) {
+      return json(503, { error: 'ecriture-impossible', detail: String(e2?.message || e2) }, cors);
     }
   }
 
